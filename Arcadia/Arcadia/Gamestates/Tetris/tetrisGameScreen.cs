@@ -31,6 +31,7 @@ namespace Arcadia.Gamestates.Tetris
         SpriteFont font;
 
         #endregion
+
         #region Initialization
 
         public TetrisGameScreen()
@@ -61,6 +62,7 @@ namespace Arcadia.Gamestates.Tetris
         }
 
         #endregion
+
         #region Update and Draw
 
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
