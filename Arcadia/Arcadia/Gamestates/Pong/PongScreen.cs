@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Arcadia;
+using Arcadia.Graphics;
 using Arcadia.Screen;
+
 
 namespace Arcadia.Gamestates.Pong
 {
@@ -18,6 +17,8 @@ namespace Arcadia.Gamestates.Pong
         Viewport vp;
         int speed = 5;
 
+        Ball ball;
+
         Vector2[] v2Player = new Vector2[2];
         Rectangle[] rPlayer = new Rectangle[2];
         int[] score = { 0, 0 };
@@ -25,7 +26,7 @@ namespace Arcadia.Gamestates.Pong
 
         int bound = 5;
 
-        int paddleHeight = 60;
+        int paddleHeight = 75;
         int paddleWidth = 10;
 
         Vector2[] v2Arena = new Vector2[3];
@@ -55,7 +56,7 @@ namespace Arcadia.Gamestates.Pong
 
             string ContentLoadDir = "Sprite/Pong/";
 
-            t2dBall = content.Load<Texture2D>( ContentLoadDir + "ball" );
+            t2dBall = content.Load<Texture2D>( ContentLoadDir + "pongball" );
 
             Initialize();
 
@@ -66,10 +67,13 @@ namespace Arcadia.Gamestates.Pong
         {
             vp = ScreenManager.Game.GraphicsDevice.Viewport;
 
-            // Set up paddles
-            v2Player[0] = new Vector2(bound, vp.Height / 2 - (paddleHeight / 2));
+            // Set up ball
+            ball = new Ball(new Vector2(300, 300), t2dBall);
 
-            v2Player[1] = new Vector2(vp.Width - bound - paddleWidth, 
+            // Set up paddles
+            v2Player[0] = new Vector2(3*bound, vp.Height / 2 - (paddleHeight / 2));
+
+            v2Player[1] = new Vector2(vp.Width - 3*bound - paddleWidth, 
                                       vp.Height / 2 - (paddleHeight / 2));
 
             rPlayer[0] = new Rectangle((int)v2Player[0].X, (int)v2Player[0].Y, 
@@ -129,6 +133,9 @@ namespace Arcadia.Gamestates.Pong
             for (int i = 0; i < v2Arena.Length; i++)
                 sb.Draw(whiteRectangle, rArena[i], Color.White);
 
+            // Draw the ball
+            ball.Draw(sb);
+
             // Draw the paddles
             sb.Draw(whiteRectangle, rPlayer[0], Color.White);
             sb.Draw(whiteRectangle, rPlayer[1], Color.White);
@@ -137,6 +144,8 @@ namespace Arcadia.Gamestates.Pong
 
             base.Draw(gameTime);
         }
+
+
         #endregion
     }
 }
