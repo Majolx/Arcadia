@@ -11,7 +11,6 @@
 using Microsoft.Xna.Framework;
 using Arcadia;
 using Arcadia.Screen;
-using Arcadia.Gamestates.Pong;
 #endregion
 
 namespace Arcadia.Gamestates.Menu
@@ -28,7 +27,7 @@ namespace Arcadia.Gamestates.Menu
         /// Constructor fills in the menu contents.
         /// </summary>
         public MainMenuScreen()
-            : base("Main Menu")
+            : base("Arcadia")
         {
             // Create our menu entries.
             MenuEntry playGameMenuEntry = new MenuEntry("Play Game");
@@ -57,7 +56,7 @@ namespace Arcadia.Gamestates.Menu
         /// </summary>
         void PlayGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            ScreenManager.AddScreen(new PongScreen(), e.PlayerIndex);
+            ScreenManager.AddScreen(new NewGameMenuScreen(), e.PlayerIndex);
         }
 
 

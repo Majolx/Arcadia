@@ -53,7 +53,7 @@ namespace Arcadia.Gamestates.Menu
 
 
         /// <summary>
-        /// When the user cancels the main menu, ask if they want to exit the sample.
+        /// Exit this screen.
         /// </summary>
         protected override void OnCancel(PlayerIndex playerIndex)
         {

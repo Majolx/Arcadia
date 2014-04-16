@@ -113,9 +113,10 @@
     <Compile Include="Gamestates\Loading\LoadingScreen.cs" />
     <Compile Include="Gamestates\Menu\DisplayMenuScreen.cs" />
     <Compile Include="Gamestates\Menu\MainMenuScreen.cs" />
+    <Compile Include="Gamestates\Menu\NewGameMenuScreen.cs" />
     <Compile Include="Gamestates\Menu\OptionsMenuScreen.cs" />
     <Compile Include="Gamestates\Pong\PongScreen.cs" />
-    <Compile Include="Gamestates\Tetris\tetrisGameScreen.cs" />
+    <Compile Include="Gamestates\Tetris\TetrisGameScreen.cs" />
     <Compile Include="Graphics\Sprite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screen\GameScreen.cs" />

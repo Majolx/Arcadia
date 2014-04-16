@@ -22,7 +22,7 @@ using Arcadia.Screen;
 
 namespace Arcadia.Gamestates.Tetris
 {
-    class tetrisGameScreen : GameScreen
+    class TetrisGameScreen : GameScreen
     {
         #region Fields
 
@@ -33,7 +33,7 @@ namespace Arcadia.Gamestates.Tetris
         #endregion
         #region Initialization
 
-        public tetrisGameScreen()
+        public TetrisGameScreen()
         {
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
