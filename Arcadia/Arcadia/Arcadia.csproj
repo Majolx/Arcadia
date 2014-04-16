@@ -109,7 +109,6 @@
   <ItemGroup>
     <Compile Include="Game.cs" />
     <Compile Include="Gamestates\Asteroids\AsteroidGameScreen.cs" />
-    <Compile Include="Gamestates\Debug\DebugScreen.cs" />
     <Compile Include="Gamestates\Loading\LoadingScreen.cs" />
     <Compile Include="Gamestates\Menu\DisplayMenuScreen.cs" />
     <Compile Include="Gamestates\Menu\MainMenuScreen.cs" />

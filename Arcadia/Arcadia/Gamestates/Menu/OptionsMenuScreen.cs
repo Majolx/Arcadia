@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Arcadia.Screen;
-using Arcadia.Gamestates.Debug;
 
 namespace Arcadia.Gamestates.Menu
 {
