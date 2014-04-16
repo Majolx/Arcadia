@@ -23,10 +23,10 @@ namespace Arcadia.Gamestates.Pong
         int[] score = { 0, 0 };
 
 
-        int bound = 30;
+        int bound = 5;
 
         int paddleHeight = 60;
-        int paddleWidth = 30;
+        int paddleWidth = 10;
 
         Vector2[] v2Arena = new Vector2[3];
         Rectangle[] rArena = new Rectangle[3];
@@ -80,12 +80,12 @@ namespace Arcadia.Gamestates.Pong
 
 
             // Set up arena
-            v2Arena[0] = new Vector2(0, 0);
-            v2Arena[1] = new Vector2(vp.Width / 2 - bound / 2, 0);
-            v2Arena[2] = new Vector2(0, vp.Height - bound);
+            v2Arena[0] = new Vector2(0, 2*bound);
+            v2Arena[1] = new Vector2(vp.Width / 2 - bound / 2, v2Arena[0].Y);
+            v2Arena[2] = new Vector2(0, vp.Height - 3*bound);
 
             rArena[0] = new Rectangle((int)v2Arena[0].X, (int)v2Arena[0].Y, vp.Width, bound);
-            rArena[1] = new Rectangle((int)v2Arena[1].X, (int)v2Arena[1].Y, bound, vp.Height);
+            rArena[1] = new Rectangle((int)v2Arena[1].X, (int)v2Arena[1].Y, bound, (int)v2Arena[2].Y - (int)v2Arena[1].Y);
             rArena[2] = new Rectangle((int)v2Arena[2].X, (int)v2Arena[2].Y, vp.Width, bound);
 
             // Set white texture
@@ -100,10 +100,10 @@ namespace Arcadia.Gamestates.Pong
 
         public override void HandleInput(InputState input)
         {
-            if (input.IsKeyDown(Keys.S) && v2Player[0].Y < vp.Height - bound - rPlayer[0].Height)
+            if (input.IsKeyDown(Keys.S) && v2Player[0].Y < v2Arena[2].Y - rPlayer[0].Height)
                 v2Player[0].Y += speed;
 
-            if (input.IsKeyDown(Keys.W) && v2Player[0].Y > bound)
+            if (input.IsKeyDown(Keys.W) && v2Player[0].Y > v2Arena[0].Y + rArena[0].Height)
                 v2Player[0].Y -= speed;
 
             UpdateRectangles();
