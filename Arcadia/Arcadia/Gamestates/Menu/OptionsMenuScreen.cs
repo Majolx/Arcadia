@@ -20,17 +20,14 @@ namespace Arcadia.Gamestates.Menu
         {
             // Create our menu entries.
             MenuEntry displayMenuEntry = new MenuEntry("Display");
-            MenuEntry debugMenuEntry = new MenuEntry("Debug");
             MenuEntry backMenuEntry = new MenuEntry("Go Back");
 
             // Hook up menu event handlers.
             displayMenuEntry.Selected += DisplayMenuEntrySelected;
-            debugMenuEntry.Selected += DebugMenuEntrySelected;
             backMenuEntry.Selected += OnCancel;
 
             // Add entries to the menu.
             MenuEntries.Add(displayMenuEntry);
-            MenuEntries.Add(debugMenuEntry);
             MenuEntries.Add(backMenuEntry);
         }
 
@@ -39,15 +36,12 @@ namespace Arcadia.Gamestates.Menu
 
         #region Handle Input
 
+        /// <summary>
+        /// Show the Display menu.
+        /// </summary>
         void DisplayMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
             ScreenManager.AddScreen(new DisplayMenuScreen(), e.PlayerIndex);
-        }
-
-
-        void DebugMenuEntrySelected(object sender, PlayerIndexEventArgs e)
-        {
-            ScreenManager.AddScreen(new DebugScreen(), e.PlayerIndex);
         }
 
 
