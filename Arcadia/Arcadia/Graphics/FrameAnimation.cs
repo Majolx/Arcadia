@@ -233,7 +233,7 @@ namespace Arcadia.Graphics
         #region Clone
 
 
-        public object ICloneable.Clone()
+        object ICloneable.Clone()
         {
             return new FrameAnimation(this.rectInitialFrame.X, this.rectInitialFrame.Y,
                                       this.rectInitialFrame.Width, this.rectInitialFrame.Height,
