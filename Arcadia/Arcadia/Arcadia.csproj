@@ -116,8 +116,13 @@
     <Compile Include="Gamestates\Menu\OptionsMenuScreen.cs" />
     <Compile Include="Gamestates\Pong\Ball.cs" />
     <Compile Include="Gamestates\Pong\PongScreen.cs" />
-    <Compile Include="Gamestates\Tetris\TetrisGameScreen.cs" />
+    <Compile Include="Gamestates\Tetris\TetrisGameScreen.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Graphics\FrameAnimation.cs" />
+    <Compile Include="Graphics\MobileSprite.cs" />
     <Compile Include="Graphics\Sprite.cs" />
+    <Compile Include="Graphics\SpriteAnimation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screen\GameScreen.cs" />
     <Compile Include="Screen\InputState.cs" />
