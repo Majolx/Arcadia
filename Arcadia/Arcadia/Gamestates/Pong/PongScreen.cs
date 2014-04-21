@@ -17,7 +17,8 @@ namespace Arcadia.Gamestates.Pong
         Viewport vp;
         int speed = 5;
 
-        Ball ball;
+        MobileSprite ball;
+        Vector2 v2BallDirection = new Vector2(5, 5);
 
         Vector2[] v2Player = new Vector2[2];
         Rectangle[] rPlayer = new Rectangle[2];
@@ -68,7 +69,12 @@ namespace Arcadia.Gamestates.Pong
             vp = ScreenManager.Game.GraphicsDevice.Viewport;
 
             // Set up ball
-            ball = new Ball(new Vector2(300, 300), t2dBall);
+            ball = new MobileSprite(t2dBall);
+            ball.Sprite.AddAnimation("ball", 0, 0, 16, 16, 1, 1f);
+            ball.Position = new Vector2(0, 75);
+            ball.IsPathing = false;
+
+            ball.Sprite.CurrentAnimation = "ball";
 
             // Set up paddles
             v2Player[0] = new Vector2(3*bound, vp.Height / 2 - (paddleHeight / 2));
@@ -102,6 +108,32 @@ namespace Arcadia.Gamestates.Pong
 
         #region Update and Draw
 
+        public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
+        {
+            ball.Position += v2BallDirection;
+
+            if (ball.Position.Y + ball.Sprite.Texture.Height > rArena[2].Y ||
+                ball.Position.Y < rArena[0].Y + rArena[0].Height)
+            {
+                v2BallDirection *= new Vector2(1, -1);
+            }
+
+            if (ball.CollisionBox.Left < rPlayer[0].X + rPlayer[0].Width &&
+                ball.CollisionBox.Bottom > rPlayer[0].Y &&
+                ball.CollisionBox.Top < rPlayer[0].Y + rPlayer[0].Height)
+            {
+                v2BallDirection *= new Vector2(-1, 1);
+            }
+
+            if (ball.CollisionBox.Right > ScreenManager.Game.GraphicsDevice.Viewport.Width)
+            {
+                v2BallDirection *= new Vector2(-1, 1);
+            }
+
+            ball.Update(gameTime);
+            
+            base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
+        }
         public override void HandleInput(InputState input)
         {
             if (input.IsKeyDown(Keys.S) && v2Player[0].Y < v2Arena[2].Y - rPlayer[0].Height)

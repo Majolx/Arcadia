@@ -114,7 +114,6 @@
     <Compile Include="Gamestates\Menu\MainMenuScreen.cs" />
     <Compile Include="Gamestates\Menu\NewGameMenuScreen.cs" />
     <Compile Include="Gamestates\Menu\OptionsMenuScreen.cs" />
-    <Compile Include="Gamestates\Pong\Ball.cs" />
     <Compile Include="Gamestates\Pong\PongScreen.cs" />
     <Compile Include="Gamestates\Tetris\TetrisGameScreen.cs">
       <SubType>Code</SubType>
