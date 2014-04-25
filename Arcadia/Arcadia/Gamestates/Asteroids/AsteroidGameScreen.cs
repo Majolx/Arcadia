@@ -1,6 +1,6 @@
 ﻿#region Information
 
-/* Asteroid, a game where a player take vontrol of a spaceship
+/* Asteroid, a game where a player take control of a spaceship
  * and will try to destroy as much asteriods as it can before
  * crashing to one of the asteriods.
  *      Written by: Norlan Prudente
@@ -312,7 +312,7 @@ namespace Arcadia.Gamestates.Asteroids
 
         #endregion
 
-        #region Update and Draw
+        #region Update
 
 
         /// <summary>
@@ -679,6 +679,9 @@ namespace Arcadia.Gamestates.Asteroids
             return new Vector2(xVelocity, yVelocity);
         }
 
+        #endregion
+
+        #region Draw
         /// <summary>
         /// The screen's draw loop.  Draw all artifacts here.
         /// </summary>
