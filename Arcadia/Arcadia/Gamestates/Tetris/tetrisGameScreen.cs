@@ -80,6 +80,9 @@ namespace Arcadia.Gamestates.Tetris
         //score holder
         int score = 0;
 
+        //gameover
+        bool gameOver = false;
+
         public ContentManager content;
 
         #endregion
@@ -140,274 +143,97 @@ namespace Arcadia.Gamestates.Tetris
 
         public override void HandleInput(InputState input)
         {
-            currentKBState  = Keyboard.GetState();
-
-            if (currentKBState.IsKeyDown(Keys.Left) && previousKBState.IsKeyUp(Keys.Left))
+            if (!gameOver)
             {
-                if (setup && !done)
+                currentKBState = Keyboard.GetState();
+
+                if (currentKBState.IsKeyDown(Keys.Left) && previousKBState.IsKeyUp(Keys.Left))
                 {
-                    //collision for left border
-                    for (int j = 0; j < 4; j++)
+                    if (setup && !done)
                     {
-                        if (leftBorder[0].Position.X + 40 > currentArray[j].Position.X)
+                        //collision for left border
+                        for (int j = 0; j < 4; j++)
                         {
-                            currentArray[0].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
-                            currentArray[1].Position = new Vector2(currentArray[1].Position.X + 20, currentArray[1].Position.Y);
-                            currentArray[2].Position = new Vector2(currentArray[2].Position.X + 20, currentArray[2].Position.Y);
-                            currentArray[3].Position = new Vector2(currentArray[3].Position.X + 20, currentArray[3].Position.Y);
-                        }
-                    }
-   
-                    //collision in two dimmentional array
-                    for (int i = 0; i < 4; i++)
-                    {
-                        for (int j = 0; j < 20; j++)
-                        {
-                            for (int k = 0; k < 16; k++)
+                            if (leftBorder[0].Position.X + 40 > currentArray[j].Position.X)
                             {
-                                if (collisionArray[j, k] != null)
-                                {
-                                    if (collisionArray[j, k].Position.Y < currentArray[i].Position.Y + 10 &&
-                                        collisionArray[j, k].Position.Y + 20 > currentArray[i].Position.Y + 10 &&
-                                        collisionArray[j, k].Position.X + 40 > currentArray[i].Position.X &&
-                                        collisionArray[j, k].Position.X + 40 < currentArray[i].Position.X + 10)
-                                    {
-                                        currentArray[0].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
-                                        currentArray[1].Position = new Vector2(currentArray[1].Position.X + 20, currentArray[1].Position.Y);
-                                        currentArray[2].Position = new Vector2(currentArray[2].Position.X + 20, currentArray[2].Position.Y);
-                                        currentArray[3].Position = new Vector2(currentArray[3].Position.X + 20, currentArray[3].Position.Y);
-                                    }//if collisionArray
-                                }//if !null
-                            }//k
-                        }//j
-                    }//i
-
-                    
-                    currentArray[0].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
-                    currentArray[1].Position = new Vector2(currentArray[1].Position.X - 20, currentArray[1].Position.Y);
-                    currentArray[2].Position = new Vector2(currentArray[2].Position.X - 20, currentArray[2].Position.Y);
-                    currentArray[3].Position = new Vector2(currentArray[3].Position.X - 20, currentArray[3].Position.Y);
-                }
-            }
-            
-            if(currentKBState.IsKeyDown(Keys.Right) && previousKBState.IsKeyUp(Keys.Right))
-            {
-                if (setup && !done)
-                {
-                    //collision for right border
-                    for (int j = 0; j < 4; j++)
-                    {
-                        if (rightBorder[0].Position.X - 20 < currentArray[j].Position.X)
-                        {
-                            currentArray[0].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
-                            currentArray[1].Position = new Vector2(currentArray[1].Position.X - 20, currentArray[1].Position.Y);
-                            currentArray[2].Position = new Vector2(currentArray[2].Position.X - 20, currentArray[2].Position.Y);
-                            currentArray[3].Position = new Vector2(currentArray[3].Position.X - 20, currentArray[3].Position.Y);
+                                currentArray[0].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
+                                currentArray[1].Position = new Vector2(currentArray[1].Position.X + 20, currentArray[1].Position.Y);
+                                currentArray[2].Position = new Vector2(currentArray[2].Position.X + 20, currentArray[2].Position.Y);
+                                currentArray[3].Position = new Vector2(currentArray[3].Position.X + 20, currentArray[3].Position.Y);
+                            }
                         }
-                    }
 
-                    //collision in two dimmentional array
-                    for (int i = 0; i < 4; i++)
-                    {
-                        for (int j = 0; j < 20; j++)
+                        //collision in two dimmentional array
+                        for (int i = 0; i < 4; i++)
                         {
-                            for (int k = 0; k < 16; k++)
+                            for (int j = 0; j < 20; j++)
                             {
-                                if (collisionArray[j, k] != null)
+                                for (int k = 0; k < 16; k++)
                                 {
-                                    if (collisionArray[j, k].Position.Y < currentArray[i].Position.Y + 10 &&
-                                        collisionArray[j, k].Position.Y + 20 > currentArray[i].Position.Y + 10 &&
-                                        collisionArray[j, k].Position.X - 20 < currentArray[i].Position.X &&
-                                        collisionArray[j, k].Position.X - 20 > currentArray[i].Position.X + 10)
+                                    if (collisionArray[j, k] != null)
                                     {
-                                        currentArray[0].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
-                                        currentArray[1].Position = new Vector2(currentArray[1].Position.X - 20, currentArray[1].Position.Y);
-                                        currentArray[2].Position = new Vector2(currentArray[2].Position.X - 20, currentArray[2].Position.Y);
-                                        currentArray[3].Position = new Vector2(currentArray[3].Position.X - 20, currentArray[3].Position.Y);
-                                    }//if collisionArray
-                                }//if !null
-                            }//k
-                        }//j
-                    }//i
-                    currentArray[0].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
-                    currentArray[1].Position = new Vector2(currentArray[1].Position.X + 20, currentArray[1].Position.Y);
-                    currentArray[2].Position = new Vector2(currentArray[2].Position.X + 20, currentArray[2].Position.Y);
-                    currentArray[3].Position = new Vector2(currentArray[3].Position.X + 20, currentArray[3].Position.Y);
-                }
-            }
+                                        if (collisionArray[j, k].Position.Y < currentArray[i].Position.Y + 10 &&
+                                            collisionArray[j, k].Position.Y + 20 > currentArray[i].Position.Y + 10 &&
+                                            collisionArray[j, k].Position.X + 40 > currentArray[i].Position.X &&
+                                            collisionArray[j, k].Position.X + 40 < currentArray[i].Position.X + 10)
+                                        {
+                                            currentArray[0].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
+                                            currentArray[1].Position = new Vector2(currentArray[1].Position.X + 20, currentArray[1].Position.Y);
+                                            currentArray[2].Position = new Vector2(currentArray[2].Position.X + 20, currentArray[2].Position.Y);
+                                            currentArray[3].Position = new Vector2(currentArray[3].Position.X + 20, currentArray[3].Position.Y);
+                                        }//if collisionArray
+                                    }//if !null
+                                }//k
+                            }//j
+                        }//i
 
-            if (currentKBState.IsKeyDown(Keys.Down))
-                speed = 10;
-            if (previousKBState.IsKeyUp(Keys.Down))
-                speed = 2;
-             
-            if (currentKBState.IsKeyDown(Keys.Space) && previousKBState.IsKeyUp(Keys.Space))
-            {
-                //for square
-                if (randomNumber == 1 && shape == 1)
-                {
-                    shape = 1;
-                }
-                //rotate the line shape
-                else if (randomNumber == 2 && shape == 1)
-                {
-                    currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
-                    currentArray[2].Position = new Vector2(currentArray[1].Position.X, currentArray[1].Position.Y - 20);
-                    currentArray[3].Position = new Vector2(currentArray[1].Position.X, currentArray[2].Position.Y - 20);
-                    
-                    shape = 2;
-                }
-                else if (randomNumber == 2 && shape == 2)
-                {
-                    currentArray[1].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
-                    currentArray[2].Position = new Vector2(currentArray[1].Position.X + 20, currentArray[1].Position.Y);
-                    currentArray[3].Position = new Vector2(currentArray[2].Position.X + 20, currentArray[2].Position.Y);
 
-                    shape = 1;
-                }
-                //rotate the T shape
-                else if (randomNumber == 3 && shape == 1)
-                {
-                    currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
-                    currentArray[2].Position = new Vector2(currentArray[1].Position.X, currentArray[1].Position.Y - 20);
-                    currentArray[3].Position = new Vector2(currentArray[1].Position.X - 20, currentArray[1].Position.Y);
-
-                    shape = 2;
-                }
-                else if (randomNumber == 3 && shape == 2)
-                {
-                    currentArray[1].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
-                    currentArray[2].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
-                    currentArray[3].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
-
-                    shape = 3;
-                }
-                else if (randomNumber == 3 && shape == 3)
-                {
-                    currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
-                    currentArray[2].Position = new Vector2(currentArray[1].Position.X, currentArray[1].Position.Y - 20);
-                    currentArray[3].Position = new Vector2(currentArray[1].Position.X + 20, currentArray[1].Position.Y);
-
-                    shape = 4;
-                }
-                else if (randomNumber == 3 && shape == 4)
-                {
-                    currentArray[1].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y - 20);
-                    currentArray[2].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
-                    currentArray[3].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y - 20);
-
-                    shape = 1;
-                }
-                //rotate z shape
-                else if (randomNumber == 4 && shape == 1)
-                {
-                    currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
-                    currentArray[2].Position = new Vector2(currentArray[1].Position.X + 20, currentArray[1].Position.Y);
-                    currentArray[3].Position = new Vector2(currentArray[2].Position.X, currentArray[2].Position.Y - 20);
-
-                    shape = 2;
-                }
-                else if (randomNumber == 4 && shape == 2)
-                {
-                    currentArray[1].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
-                    currentArray[2].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
-                    currentArray[3].Position = new Vector2(currentArray[2].Position.X - 20, currentArray[2].Position.Y);
-
-                    shape = 1;
-                }
-                //rotate s shape
-                else if (randomNumber == 5 && shape == 1)
-                {
-                    currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
-                    currentArray[2].Position = new Vector2(currentArray[1].Position.X - 20, currentArray[1].Position.Y);
-                    currentArray[3].Position = new Vector2(currentArray[2].Position.X, currentArray[2].Position.Y - 20);
-
-                    shape = 2;
-                }
-                else if (randomNumber == 5 && shape == 2)
-                {
-                    currentArray[1].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
-                    currentArray[2].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
-                    currentArray[3].Position = new Vector2(currentArray[2].Position.X + 20, currentArray[2].Position.Y);
-
-                    shape = 1;
-                }
-                //rotate L shape
-                else if (randomNumber == 6 && shape == 1)
-                {
-                    currentArray[0].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
-                    currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
-                    currentArray[2].Position = new Vector2(currentArray[1].Position.X + 20, currentArray[1].Position.Y);
-                    currentArray[3].Position = new Vector2(currentArray[2].Position.X + 20, currentArray[2].Position.Y);
-
-                    shape = 2;
-                }
-                else if (randomNumber == 6 && shape == 2)
-                {
-                    currentArray[0].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
-                    currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
-                    currentArray[2].Position = new Vector2(currentArray[1].Position.X, currentArray[1].Position.Y - 20);
-                    currentArray[3].Position = new Vector2(currentArray[2].Position.X - 20, currentArray[2].Position.Y);
-
-                    shape = 3;
-                }
-                else if (randomNumber == 6 && shape == 3)
-                {
-                    currentArray[1].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
-                    currentArray[2].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
-                    currentArray[3].Position = new Vector2(currentArray[2].Position.X, currentArray[2].Position.Y - 20);
-
-                    shape = 4;
-                }
-                else if (randomNumber == 6 && shape == 4)
-                {
-                    currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
-                    currentArray[2].Position = new Vector2(currentArray[1].Position.X, currentArray[1].Position.Y - 20);
-                    currentArray[3].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
-
-                    shape = 1;
-                }
-                //rotate backward L shape
-                else if (randomNumber == 7 && shape == 1)
-                {
-                    currentArray[1].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
-                    currentArray[2].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
-                    currentArray[3].Position = new Vector2(currentArray[2].Position.X, currentArray[2].Position.Y - 20);
-
-                    shape = 2;
-                }
-                else if (randomNumber == 7 && shape == 2)
-                {
-                    currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
-                    currentArray[2].Position = new Vector2(currentArray[1].Position.X, currentArray[1].Position.Y - 20);
-                    currentArray[3].Position = new Vector2(currentArray[2].Position.X + 20, currentArray[2].Position.Y);
-
-                    shape = 3;
-                }
-                else if (randomNumber == 7 && shape == 3)
-                {
-                    currentArray[0].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
-                    currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
-                    currentArray[2].Position = new Vector2(currentArray[1].Position.X - 20, currentArray[1].Position.Y);
-                    currentArray[3].Position = new Vector2(currentArray[2].Position.X - 20, currentArray[2].Position.Y);
-
-                    shape = 4;
-                }
-                else if (randomNumber == 7 && shape == 4)
-                {
-                    currentArray[0].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
-                    currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
-                    currentArray[2].Position = new Vector2(currentArray[1].Position.X, currentArray[1].Position.Y - 20);
-                    currentArray[3].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
-
-                    shape = 1;
+                        currentArray[0].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
+                        currentArray[1].Position = new Vector2(currentArray[1].Position.X - 20, currentArray[1].Position.Y);
+                        currentArray[2].Position = new Vector2(currentArray[2].Position.X - 20, currentArray[2].Position.Y);
+                        currentArray[3].Position = new Vector2(currentArray[3].Position.X - 20, currentArray[3].Position.Y);
+                    }
                 }
 
-                //collision for left border
-                for (int j = 0; j < 4; j++)
+                if (currentKBState.IsKeyDown(Keys.Right) && previousKBState.IsKeyUp(Keys.Right))
                 {
-                    if (leftBorder[0].Position.X + 20 > currentArray[j].Position.X)
+                    if (setup && !done)
                     {
+                        //collision for right border
+                        for (int j = 0; j < 4; j++)
+                        {
+                            if (rightBorder[0].Position.X - 20 < currentArray[j].Position.X)
+                            {
+                                currentArray[0].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
+                                currentArray[1].Position = new Vector2(currentArray[1].Position.X - 20, currentArray[1].Position.Y);
+                                currentArray[2].Position = new Vector2(currentArray[2].Position.X - 20, currentArray[2].Position.Y);
+                                currentArray[3].Position = new Vector2(currentArray[3].Position.X - 20, currentArray[3].Position.Y);
+                            }
+                        }
+
+                        //collision in two dimmentional array
+                        for (int i = 0; i < 4; i++)
+                        {
+                            for (int j = 0; j < 20; j++)
+                            {
+                                for (int k = 0; k < 16; k++)
+                                {
+                                    if (collisionArray[j, k] != null)
+                                    {
+                                        if (collisionArray[j, k].Position.Y < currentArray[i].Position.Y + 10 &&
+                                            collisionArray[j, k].Position.Y + 20 > currentArray[i].Position.Y + 10 &&
+                                            collisionArray[j, k].Position.X - 20 < currentArray[i].Position.X &&
+                                            collisionArray[j, k].Position.X - 20 > currentArray[i].Position.X + 10)
+                                        {
+                                            currentArray[0].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
+                                            currentArray[1].Position = new Vector2(currentArray[1].Position.X - 20, currentArray[1].Position.Y);
+                                            currentArray[2].Position = new Vector2(currentArray[2].Position.X - 20, currentArray[2].Position.Y);
+                                            currentArray[3].Position = new Vector2(currentArray[3].Position.X - 20, currentArray[3].Position.Y);
+                                        }//if collisionArray
+                                    }//if !null
+                                }//k
+                            }//j
+                        }//i
                         currentArray[0].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
                         currentArray[1].Position = new Vector2(currentArray[1].Position.X + 20, currentArray[1].Position.Y);
                         currentArray[2].Position = new Vector2(currentArray[2].Position.X + 20, currentArray[2].Position.Y);
@@ -415,19 +241,199 @@ namespace Arcadia.Gamestates.Tetris
                     }
                 }
 
-                //collision for right border
-                for (int j = 0; j < 4; j++)
+                if (currentKBState.IsKeyDown(Keys.Down))
+                    speed = 10;
+                if (previousKBState.IsKeyUp(Keys.Down))
+                    speed = 2;
+
+                if (currentKBState.IsKeyDown(Keys.Space) && previousKBState.IsKeyUp(Keys.Space))
                 {
-                    if (rightBorder[0].Position.X < currentArray[j].Position.X)
+                    //for square
+                    if (randomNumber == 1 && shape == 1)
+                    {
+                        shape = 1;
+                    }
+                    //rotate the line shape
+                    else if (randomNumber == 2 && shape == 1)
+                    {
+                        currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
+                        currentArray[2].Position = new Vector2(currentArray[1].Position.X, currentArray[1].Position.Y - 20);
+                        currentArray[3].Position = new Vector2(currentArray[1].Position.X, currentArray[2].Position.Y - 20);
+
+                        shape = 2;
+                    }
+                    else if (randomNumber == 2 && shape == 2)
+                    {
+                        currentArray[1].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
+                        currentArray[2].Position = new Vector2(currentArray[1].Position.X + 20, currentArray[1].Position.Y);
+                        currentArray[3].Position = new Vector2(currentArray[2].Position.X + 20, currentArray[2].Position.Y);
+
+                        shape = 1;
+                    }
+                    //rotate the T shape
+                    else if (randomNumber == 3 && shape == 1)
+                    {
+                        currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
+                        currentArray[2].Position = new Vector2(currentArray[1].Position.X, currentArray[1].Position.Y - 20);
+                        currentArray[3].Position = new Vector2(currentArray[1].Position.X - 20, currentArray[1].Position.Y);
+
+                        shape = 2;
+                    }
+                    else if (randomNumber == 3 && shape == 2)
+                    {
+                        currentArray[1].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
+                        currentArray[2].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
+                        currentArray[3].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
+
+                        shape = 3;
+                    }
+                    else if (randomNumber == 3 && shape == 3)
+                    {
+                        currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
+                        currentArray[2].Position = new Vector2(currentArray[1].Position.X, currentArray[1].Position.Y - 20);
+                        currentArray[3].Position = new Vector2(currentArray[1].Position.X + 20, currentArray[1].Position.Y);
+
+                        shape = 4;
+                    }
+                    else if (randomNumber == 3 && shape == 4)
+                    {
+                        currentArray[1].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y - 20);
+                        currentArray[2].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
+                        currentArray[3].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y - 20);
+
+                        shape = 1;
+                    }
+                    //rotate z shape
+                    else if (randomNumber == 4 && shape == 1)
+                    {
+                        currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
+                        currentArray[2].Position = new Vector2(currentArray[1].Position.X + 20, currentArray[1].Position.Y);
+                        currentArray[3].Position = new Vector2(currentArray[2].Position.X, currentArray[2].Position.Y - 20);
+
+                        shape = 2;
+                    }
+                    else if (randomNumber == 4 && shape == 2)
+                    {
+                        currentArray[1].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
+                        currentArray[2].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
+                        currentArray[3].Position = new Vector2(currentArray[2].Position.X - 20, currentArray[2].Position.Y);
+
+                        shape = 1;
+                    }
+                    //rotate s shape
+                    else if (randomNumber == 5 && shape == 1)
+                    {
+                        currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
+                        currentArray[2].Position = new Vector2(currentArray[1].Position.X - 20, currentArray[1].Position.Y);
+                        currentArray[3].Position = new Vector2(currentArray[2].Position.X, currentArray[2].Position.Y - 20);
+
+                        shape = 2;
+                    }
+                    else if (randomNumber == 5 && shape == 2)
+                    {
+                        currentArray[1].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
+                        currentArray[2].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
+                        currentArray[3].Position = new Vector2(currentArray[2].Position.X + 20, currentArray[2].Position.Y);
+
+                        shape = 1;
+                    }
+                    //rotate L shape
+                    else if (randomNumber == 6 && shape == 1)
                     {
                         currentArray[0].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
-                        currentArray[1].Position = new Vector2(currentArray[1].Position.X - 20, currentArray[1].Position.Y);
-                        currentArray[2].Position = new Vector2(currentArray[2].Position.X - 20, currentArray[2].Position.Y);
-                        currentArray[3].Position = new Vector2(currentArray[3].Position.X - 20, currentArray[3].Position.Y);
+                        currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
+                        currentArray[2].Position = new Vector2(currentArray[1].Position.X + 20, currentArray[1].Position.Y);
+                        currentArray[3].Position = new Vector2(currentArray[2].Position.X + 20, currentArray[2].Position.Y);
+
+                        shape = 2;
+                    }
+                    else if (randomNumber == 6 && shape == 2)
+                    {
+                        currentArray[0].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
+                        currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
+                        currentArray[2].Position = new Vector2(currentArray[1].Position.X, currentArray[1].Position.Y - 20);
+                        currentArray[3].Position = new Vector2(currentArray[2].Position.X - 20, currentArray[2].Position.Y);
+
+                        shape = 3;
+                    }
+                    else if (randomNumber == 6 && shape == 3)
+                    {
+                        currentArray[1].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
+                        currentArray[2].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
+                        currentArray[3].Position = new Vector2(currentArray[2].Position.X, currentArray[2].Position.Y - 20);
+
+                        shape = 4;
+                    }
+                    else if (randomNumber == 6 && shape == 4)
+                    {
+                        currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
+                        currentArray[2].Position = new Vector2(currentArray[1].Position.X, currentArray[1].Position.Y - 20);
+                        currentArray[3].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
+
+                        shape = 1;
+                    }
+                    //rotate backward L shape
+                    else if (randomNumber == 7 && shape == 1)
+                    {
+                        currentArray[1].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
+                        currentArray[2].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
+                        currentArray[3].Position = new Vector2(currentArray[2].Position.X, currentArray[2].Position.Y - 20);
+
+                        shape = 2;
+                    }
+                    else if (randomNumber == 7 && shape == 2)
+                    {
+                        currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
+                        currentArray[2].Position = new Vector2(currentArray[1].Position.X, currentArray[1].Position.Y - 20);
+                        currentArray[3].Position = new Vector2(currentArray[2].Position.X + 20, currentArray[2].Position.Y);
+
+                        shape = 3;
+                    }
+                    else if (randomNumber == 7 && shape == 3)
+                    {
+                        currentArray[0].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
+                        currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
+                        currentArray[2].Position = new Vector2(currentArray[1].Position.X - 20, currentArray[1].Position.Y);
+                        currentArray[3].Position = new Vector2(currentArray[2].Position.X - 20, currentArray[2].Position.Y);
+
+                        shape = 4;
+                    }
+                    else if (randomNumber == 7 && shape == 4)
+                    {
+                        currentArray[0].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
+                        currentArray[1].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y - 20);
+                        currentArray[2].Position = new Vector2(currentArray[1].Position.X, currentArray[1].Position.Y - 20);
+                        currentArray[3].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
+
+                        shape = 1;
+                    }
+
+                    //collision for left border
+                    for (int j = 0; j < 4; j++)
+                    {
+                        if (leftBorder[0].Position.X + 20 > currentArray[j].Position.X)
+                        {
+                            currentArray[0].Position = new Vector2(currentArray[0].Position.X + 20, currentArray[0].Position.Y);
+                            currentArray[1].Position = new Vector2(currentArray[1].Position.X + 20, currentArray[1].Position.Y);
+                            currentArray[2].Position = new Vector2(currentArray[2].Position.X + 20, currentArray[2].Position.Y);
+                            currentArray[3].Position = new Vector2(currentArray[3].Position.X + 20, currentArray[3].Position.Y);
+                        }
+                    }
+
+                    //collision for right border
+                    for (int j = 0; j < 4; j++)
+                    {
+                        if (rightBorder[0].Position.X < currentArray[j].Position.X)
+                        {
+                            currentArray[0].Position = new Vector2(currentArray[0].Position.X - 20, currentArray[0].Position.Y);
+                            currentArray[1].Position = new Vector2(currentArray[1].Position.X - 20, currentArray[1].Position.Y);
+                            currentArray[2].Position = new Vector2(currentArray[2].Position.X - 20, currentArray[2].Position.Y);
+                            currentArray[3].Position = new Vector2(currentArray[3].Position.X - 20, currentArray[3].Position.Y);
+                        }
                     }
                 }
+                previousKBState = currentKBState;
             }
-            previousKBState = currentKBState;
         }
 
         #endregion
@@ -453,56 +459,61 @@ namespace Arcadia.Gamestates.Tetris
                 setup = true;
             }
 
-            if (done)
+            if (!gameOver)
             {
-                CreateShape();
-                done = false;
-            }
-            else if (!done)
-            {
-                count += speed;
-
-                if (count >= 60)
+                if (done)
                 {
-                    currentArray[0].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y + 20);
-                    currentArray[1].Position = new Vector2(currentArray[1].Position.X, currentArray[1].Position.Y + 20);
-                    currentArray[2].Position = new Vector2(currentArray[2].Position.X, currentArray[2].Position.Y + 20);
-                    currentArray[3].Position = new Vector2(currentArray[3].Position.X, currentArray[3].Position.Y + 20);
-
-                    count = 0;
+                    CreateShape();
+                    done = false;
                 }
-
-
-                //check if a line is formed then delete it
-                checkArraySlot();
-
-                //collisions
-                for (int i = 0; i < 4; i++)
+                else if (!done)
                 {
-                    //check blocks in 2 dimentional array first
-                    if (currentArray[i].Position.Y > 0 && currentArray[i].Position.Y < 400)
+                    count += speed;
+
+                    if (count >= 60)
                     {
-                        twoDimentionalArrayCollision();
+                        currentArray[0].Position = new Vector2(currentArray[0].Position.X, currentArray[0].Position.Y + 20);
+                        currentArray[1].Position = new Vector2(currentArray[1].Position.X, currentArray[1].Position.Y + 20);
+                        currentArray[2].Position = new Vector2(currentArray[2].Position.X, currentArray[2].Position.Y + 20);
+                        currentArray[3].Position = new Vector2(currentArray[3].Position.X, currentArray[3].Position.Y + 20);
+
+                        count = 0;
+                    }
+
+                    //game over
+                    GameOver();
+
+                    //check if a line is formed then delete it
+                    checkArraySlot();
+
+                    //collisions
+                    for (int i = 0; i < 4; i++)
+                    {
+                        //check blocks in 2 dimentional array first
+                        if (currentArray[i].Position.Y > 0 && currentArray[i].Position.Y < 400)
+                        {
+                            twoDimentionalArrayCollision();
                             i = 4;
-                    }
-                    //check bottom border
-                    else if (currentArray[i].Position.Y + 10 > bottomBorder[0].Position.Y)
-                    {
-                        BottomBorderCollision();
-                        i = 4;
+                        }
+                        //check bottom border
+                        else if (currentArray[i].Position.Y + 10 > bottomBorder[0].Position.Y)
+                        {
+                            BottomBorderCollision();
+                            i = 4;
+                        }
                     }
                 }
-            }
 
-            if (collide)
-            {
-                //resets variable
-                count = 0;
-                done = true;
-                shape = 1;
-                collide = false;
+                if (collide)
+                {
+                    //resets variable
+                    count = 0;
+                    done = true;
+                    shape = 1;
+                    collide = false;
+                }
+                base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
             }
-            base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
         }
 
         private void CreateShape()
@@ -930,6 +941,18 @@ namespace Arcadia.Gamestates.Tetris
             }
         }
 
+        private void GameOver()
+        {
+            for (int i = 0; i < 16; i++)
+            {
+                if (collisionArray[19, i] != null)
+                {
+                    gameOver = true;
+                }
+            }
+                
+        }
+
         #endregion
 
         #region Draw
@@ -941,6 +964,7 @@ namespace Arcadia.Gamestates.Tetris
             spriteBatch.Begin();
             spriteBatch.DrawString(font, "TETRIS", new Vector2(370, 500), Color.White);
             spriteBatch.DrawString(font, "Score: " + score.ToString(), new Vector2(10, 10), Color.Yellow);
+            
 
             for (int h = 0; h < 16; h++)
             {
@@ -1011,6 +1035,23 @@ namespace Arcadia.Gamestates.Tetris
                         1.0f);
                 }
             }
+            
+            if (gameOver)
+            {                
+                spriteBatch.Draw(border.Texture,
+                        border.Position,
+                        null,
+                        Color.White,
+                        border.Rotation,
+                        border.Center,
+                        border.Scale * 800,
+                        SpriteEffects.None,
+                        1.0f);
+                
+                spriteBatch.DrawString(font, "GAME OVER", new Vector2(350, 200), Color.Black);
+                spriteBatch.DrawString(font, "Your Score: " + score.ToString(), new Vector2(340, 300), Color.Black);
+            }
+
             spriteBatch.End();
 
             base.Draw(gameTime);
