@@ -14,14 +14,17 @@ namespace Arcadia.Gamestates.Pong
     {
         #region Fields
 
-        Viewport vp;
         int speed = 5;
 
-        MobileSprite ball;
+        Ball ball;
         Vector2 v2BallDirection = new Vector2(5, 5);
 
         Vector2[] v2Player = new Vector2[2];
-        Rectangle[] rPlayer = new Rectangle[2];
+        Paddle[] paddles = new Paddle[2];
+        Color[] paddleColors = new Color[2];
+        Vector2[] v2StartingPos = { new Vector2(15, 200),
+                                    new Vector2(645, 200) };
+
         int[] score = { 0, 0 };
 
 
@@ -29,6 +32,8 @@ namespace Arcadia.Gamestates.Pong
 
         int paddleHeight = 75;
         int paddleWidth = 10;
+        Color p1Color = Color.Green;
+        Color p2Color = Color.Red;
 
         Vector2[] v2Arena = new Vector2[3];
         Rectangle[] rArena = new Rectangle[3];
@@ -66,27 +71,26 @@ namespace Arcadia.Gamestates.Pong
 
         public void Initialize()
         {
-            vp = ScreenManager.Game.GraphicsDevice.Viewport;
+            GraphicsDevice gd = ScreenManager.Game.GraphicsDevice;
+            Viewport vp = gd.Viewport;
 
             // Set up ball
-            ball = new MobileSprite(t2dBall);
-            ball.Sprite.AddAnimation("ball", 0, 0, 16, 16, 1, 1f);
-            ball.Position = new Vector2(0, 75);
-            ball.IsPathing = false;
-
-            ball.Sprite.CurrentAnimation = "ball";
+            ball = new Ball(t2dBall);
+            ball.Position = new Vector2(vp.Width / 2 - ball.Texture.Width / 2,
+                                        vp.Height / 2 - ball.Texture.Height / 2);
 
             // Set up paddles
-            v2Player[0] = new Vector2(3*bound, vp.Height / 2 - (paddleHeight / 2));
+            paddles[0] = new Paddle( );//new Rectangle(0, 0, paddleWidth, paddleHeight));
+            paddles[0].Position = new Vector2(3 * bound, vp.Height / 2 - (paddleHeight / 2));
+            paddles[0].OuterColor = Color.LimeGreen;
+            paddles[0].InnerColor = Color.Black;
+            paddles[0].FinalizeTexture(gd);
 
-            v2Player[1] = new Vector2(vp.Width - 3*bound - paddleWidth, 
-                                      vp.Height / 2 - (paddleHeight / 2));
-
-            rPlayer[0] = new Rectangle((int)v2Player[0].X, (int)v2Player[0].Y, 
-                                        paddleWidth, paddleHeight);
-
-            rPlayer[1] = new Rectangle((int)v2Player[1].X, (int)v2Player[1].Y, 
-                                        paddleWidth, paddleHeight);
+            paddles[1] = new Paddle( );//new Rectangle(0, 0, paddleWidth, paddleHeight));
+            paddles[1].Position = new Vector2(vp.Width - 3*bound - paddleWidth, vp.Height / 2 - (paddleHeight / 2));
+            paddles[1].OuterColor = Color.Blue;
+            paddles[1].InnerColor = Color.Black;
+            paddles[1].FinalizeTexture(gd);
 
 
             // Set up arena
@@ -112,47 +116,50 @@ namespace Arcadia.Gamestates.Pong
         {
             ball.Position += v2BallDirection;
 
-            if (ball.Position.Y + ball.Sprite.Texture.Height > rArena[2].Y ||
+            // Hits the floor or celing
+            if (ball.Position.Y + ball.Texture.Height > rArena[2].Y ||
                 ball.Position.Y < rArena[0].Y + rArena[0].Height)
             {
                 v2BallDirection *= new Vector2(1, -1);
             }
 
-            if (ball.CollisionBox.Left < rPlayer[0].X + rPlayer[0].Width &&
-                ball.CollisionBox.Bottom > rPlayer[0].Y &&
-                ball.CollisionBox.Top < rPlayer[0].Y + rPlayer[0].Height)
+            // Hits the left paddle
+            if (ball.CollisionBox.Left <= paddles[0].CollisionBox.Right &&
+                ball.CollisionBox.Left >= paddles[0].CollisionBox.Right- 4*ball.Speed &&
+                ball.CollisionBox.Bottom > paddles[0].CollisionBox.Top &&
+                ball.CollisionBox.Top < paddles[0].CollisionBox.Bottom &&
+                v2BallDirection.X < 0)
             {
                 v2BallDirection *= new Vector2(-1, 1);
             }
 
-            if (ball.CollisionBox.Right > ScreenManager.Game.GraphicsDevice.Viewport.Width)
+            // Hits the right side
+            if (ball.CollisionBox.Right > ScreenManager.Game.GraphicsDevice.Viewport.Width &&
+                v2BallDirection.X > 0)
             {
                 v2BallDirection *= new Vector2(-1, 1);
             }
 
-            ball.Update(gameTime);
-            
+            ball.Update();
+
+            for (int i = 0; i < paddles.Length; i++)
+            {
+                paddles[i].Update();
+            }
+
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
         }
+
+
         public override void HandleInput(InputState input)
         {
-            if (input.IsKeyDown(Keys.S) && v2Player[0].Y < v2Arena[2].Y - rPlayer[0].Height)
-                v2Player[0].Y += speed;
+            if (input.IsKeyDown(Keys.S) && paddles[0].Position.Y < v2Arena[2].Y - paddles[0].CollisionBox.Height)
+                paddles[0].Position = new Vector2(paddles[0].Position.X, paddles[0].Position.Y + speed);
 
-            if (input.IsKeyDown(Keys.W) && v2Player[0].Y > v2Arena[0].Y + rArena[0].Height)
-                v2Player[0].Y -= speed;
-
-            UpdateRectangles();
+            if (input.IsKeyDown(Keys.W) && paddles[0].Position.Y > v2Arena[0].Y + rArena[0].Height)
+                paddles[0].Position = new Vector2(paddles[0].Position.X, paddles[0].Position.Y - speed);
 
             base.HandleInput(input);
-        }
-
-        public void UpdateRectangles()
-        {
-            for (int i = 0; i < rPlayer.Length; i++)
-            {
-                rPlayer[i].Y = (int)v2Player[i].Y;
-            }
         }
 
         public override void Draw(GameTime gameTime)
@@ -169,8 +176,10 @@ namespace Arcadia.Gamestates.Pong
             ball.Draw(sb);
 
             // Draw the paddles
-            sb.Draw(whiteRectangle, rPlayer[0], Color.White);
-            sb.Draw(whiteRectangle, rPlayer[1], Color.White);
+            foreach (Paddle paddle in paddles)
+            {
+                paddle.Draw(sb);
+            }
 
             sb.End();
 
