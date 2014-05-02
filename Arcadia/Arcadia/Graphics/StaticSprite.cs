@@ -9,14 +9,26 @@ namespace Arcadia.Graphics
     {
         #region Fields
 
+        private bool bIsCollidable;
         private Rectangle rCollisionBox;
         private Texture2D t2dTexture;
         private Vector2 v2Position;
         private Vector2 v2Velocity;
+        private Color cColor;
 
         #endregion
 
         #region Properties
+
+        /// <summary>
+        /// T/F: The collision box of this sprite is collidable.
+        /// Default: False
+        /// </summary>
+        public bool IsCollidable
+        {
+            get { return bIsCollidable; }
+            set { bIsCollidable = value; }
+        }
 
         public Rectangle CollisionBox
         {
@@ -50,15 +62,23 @@ namespace Arcadia.Graphics
             }
         }
 
+        public Color Color
+        {
+            get { return cColor; }
+            set { cColor = value; }
+        }
+
         #endregion
 
         #region Initialization
 
         public StaticSprite()
         {
+            IsCollidable = false;
             CollisionBox = new Rectangle(0, 0, 1, 1);
             Position = new Vector2(0, 0);
             Velocity = new Vector2(0, 0);
+            Color = Color.White;
         }
 
         #endregion
@@ -73,7 +93,7 @@ namespace Arcadia.Graphics
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(t2dTexture, v2Position, Color.White);
+            spriteBatch.Draw(t2dTexture, v2Position, cColor);
         }
 
         #endregion
