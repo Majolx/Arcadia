@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,30 +15,24 @@ namespace Arcadia.Gamestates.Pong
     {
         #region Fields
 
-        int speed = 5;
-
         Ball ball;
-        Vector2 v2BallDirection = new Vector2(5, 5);
 
+        int paddleSpeed = 5;
         Vector2[] v2Player = new Vector2[2];
         Paddle[] paddles = new Paddle[2];
         Color[] paddleColors = new Color[2];
-        Vector2[] v2StartingPos = { new Vector2(15, 200),
-                                    new Vector2(645, 200) };
+        Vector2 v2StartingBallPos;
 
         int[] score = { 0, 0 };
 
 
         int bound = 5;
 
-        int paddleHeight = 75;
-        int paddleWidth = 10;
         Color p1Color = Color.Green;
         Color p2Color = Color.Red;
 
-        Vector2[] v2Arena = new Vector2[3];
-        Rectangle[] rArena = new Rectangle[3];
-        Texture2D whiteRectangle;
+        Arena arena;
+
         Texture2D t2dBall;
         
         SpriteFont font;
@@ -63,7 +58,7 @@ namespace Arcadia.Gamestates.Pong
             string ContentLoadDir = "Sprite/Pong/";
 
             t2dBall = content.Load<Texture2D>( ContentLoadDir + "pongball" );
-
+            font = content.Load<SpriteFont>("Font/gamefont");
             Initialize();
 
             base.LoadContent();
@@ -78,69 +73,123 @@ namespace Arcadia.Gamestates.Pong
             ball = new Ball(t2dBall);
             ball.Position = new Vector2(vp.Width / 2 - ball.Texture.Width / 2,
                                         vp.Height / 2 - ball.Texture.Height / 2);
+            ball.CollisionBox = new Rectangle((int)ball.Position.X, 
+                                              (int)ball.Position.Y, 
+                                              (int)ball.Texture.Width, 
+                                              (int)ball.Texture.Height);
+
+            // Save the state of the ball's starting position for respawn
+            v2StartingBallPos = ball.Position;
 
             // Set up paddles
-            paddles[0] = new Paddle( );//new Rectangle(0, 0, paddleWidth, paddleHeight));
-            paddles[0].Position = new Vector2(3 * bound, vp.Height / 2 - (paddleHeight / 2));
+            paddles[0] = new Paddle( );
+            paddles[0].Position = new Vector2(3 * bound, vp.Height / 2 - (paddles[0].CollisionBox.Height / 2));
             paddles[0].OuterColor = Color.LimeGreen;
             paddles[0].InnerColor = Color.Black;
             paddles[0].FinalizeTexture(gd);
 
-            paddles[1] = new Paddle( );//new Rectangle(0, 0, paddleWidth, paddleHeight));
-            paddles[1].Position = new Vector2(vp.Width - 3*bound - paddleWidth, vp.Height / 2 - (paddleHeight / 2));
+            paddles[1] = new Paddle( );
+            paddles[1].Position = new Vector2(vp.Width - 3*bound - paddles[1].CollisionBox.Width, vp.Height / 2 - (paddles[1].CollisionBox.Height / 2));
             paddles[1].OuterColor = Color.Blue;
             paddles[1].InnerColor = Color.Black;
             paddles[1].FinalizeTexture(gd);
 
 
             // Set up arena
-            v2Arena[0] = new Vector2(0, 2*bound);
-            v2Arena[1] = new Vector2(vp.Width / 2 - bound / 2, v2Arena[0].Y);
-            v2Arena[2] = new Vector2(0, vp.Height - 3*bound);
+            ArenaComponent[] components = new ArenaComponent[3];
 
-            rArena[0] = new Rectangle((int)v2Arena[0].X, (int)v2Arena[0].Y, vp.Width, bound);
-            rArena[1] = new Rectangle((int)v2Arena[1].X, (int)v2Arena[1].Y, bound, (int)v2Arena[2].Y - (int)v2Arena[1].Y);
-            rArena[2] = new Rectangle((int)v2Arena[2].X, (int)v2Arena[2].Y, vp.Width, bound);
+            components[0] = new ArenaComponent();
+            components[0].IsCollidable = true;
+            components[0].Position = new Vector2(0, 15);
+            components[0].CollisionBox = new Rectangle(0, 15, vp.Width, 35);
+            components[0].Color = Color.White;
+            components[0].FinalizeTexture(gd);
 
-            // Set white texture
-            whiteRectangle = new Texture2D(ScreenManager.Game.GraphicsDevice, 1, 1);
-            whiteRectangle.SetData(new[] { Color.White });
+            components[1] = new ArenaComponent();
+            components[1].IsCollidable = true;
+            components[1].CollisionBox = new Rectangle(0, vp.Height - 70, vp.Width, 35);
+            components[1].Position = new Vector2(0, components[1].CollisionBox.Y);
+            components[1].Color = Color.White;
+            components[1].FinalizeTexture(gd);
+
+            components[2] = new ArenaComponent();
+            components[2].IsDotted = true;
+            components[2].CollisionBox = new Rectangle(vp.Width / 2 - 20, components[0].CollisionBox.Bottom, 40,
+                                                       components[1].CollisionBox.Top - components[0].CollisionBox.Bottom);
+            components[2].Position = new Vector2(components[2].CollisionBox.X, components[2].CollisionBox.Y);
+            components[2].Color = Color.LightGray;
+            components[2].FinalizeTexture(gd);
+
+            arena = new Arena(components);
         }
 
 
         #endregion
 
+        public void ResetLevel()
+        {
+            ball.ReverseDirection();
+            ball.Position = v2StartingBallPos;
+        }
+
         #region Update and Draw
 
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
-            ball.Position += v2BallDirection;
+            double pi = Math.PI;
 
-            // Hits the floor or celing
-            if (ball.Position.Y + ball.Texture.Height > rArena[2].Y ||
-                ball.Position.Y < rArena[0].Y + rArena[0].Height)
+            if (ball.CollisionBox.Intersects(arena.Components[0].CollisionBox) )
+            { 
+                pi = Math.PI;
+            }
+
+            // Hits the celing
+            if (ball.CollisionBox.Intersects(arena.Components[0].CollisionBox) &&
+                ball.Direction > pi)
             {
-                v2BallDirection *= new Vector2(1, -1);
+                ball.Bounce();
+            }
+            
+            // Hits the floor
+            else if (ball.CollisionBox.Intersects(arena.Components[1].CollisionBox) &&
+                ball.Direction < pi)
+            {
+                ball.Bounce();
             }
 
             // Hits the left paddle
-            if (ball.CollisionBox.Left <= paddles[0].CollisionBox.Right &&
-                ball.CollisionBox.Left >= paddles[0].CollisionBox.Right- 4*ball.Speed &&
-                ball.CollisionBox.Bottom > paddles[0].CollisionBox.Top &&
-                ball.CollisionBox.Top < paddles[0].CollisionBox.Bottom &&
-                v2BallDirection.X < 0)
+            else if (ball.CollisionBox.Intersects(paddles[0].CollisionBox) &&
+                ball.Direction > pi/2 &&
+                ball.Direction < 3*pi/2)
             {
-                v2BallDirection *= new Vector2(-1, 1);
+                ball.Direction += (float)pi;
+                ball.Bounce();
+            }
+
+            // Hits the right paddle
+            else if (ball.CollisionBox.Intersects(paddles[1].CollisionBox) &&
+                (ball.Direction < pi ||
+                 ball.Direction > 3*pi/2))
+            {
+                ball.Direction += (float)pi;
+                ball.Bounce();
+            }
+
+            // Hits the left side
+            if (ball.CollisionBox.Left < 0)
+            {
+                score[1]++;
+                ResetLevel();
             }
 
             // Hits the right side
-            if (ball.CollisionBox.Right > ScreenManager.Game.GraphicsDevice.Viewport.Width &&
-                v2BallDirection.X > 0)
+            if (ball.CollisionBox.Right > ScreenManager.Game.GraphicsDevice.Viewport.Width)
             {
-                v2BallDirection *= new Vector2(-1, 1);
+                score[0]++;
+                ResetLevel();
             }
 
-            ball.Update();
+            ball.Update(gameTime);
 
             for (int i = 0; i < paddles.Length; i++)
             {
@@ -153,11 +202,17 @@ namespace Arcadia.Gamestates.Pong
 
         public override void HandleInput(InputState input)
         {
-            if (input.IsKeyDown(Keys.S) && paddles[0].Position.Y < v2Arena[2].Y - paddles[0].CollisionBox.Height)
-                paddles[0].Position = new Vector2(paddles[0].Position.X, paddles[0].Position.Y + speed);
+            if (input.IsKeyDown(Keys.S) && paddles[0].CollisionBox.Bottom < arena.Components[1].CollisionBox.Top)
+                paddles[0].Position = new Vector2(paddles[0].Position.X, paddles[0].Position.Y + paddleSpeed);
 
-            if (input.IsKeyDown(Keys.W) && paddles[0].Position.Y > v2Arena[0].Y + rArena[0].Height)
-                paddles[0].Position = new Vector2(paddles[0].Position.X, paddles[0].Position.Y - speed);
+            if (input.IsKeyDown(Keys.W) && paddles[0].CollisionBox.Top > arena.Components[0].CollisionBox.Bottom)
+                paddles[0].Position = new Vector2(paddles[0].Position.X, paddles[0].Position.Y - paddleSpeed);
+
+            if (input.IsKeyDown(Keys.Down) && paddles[1].CollisionBox.Bottom < arena.Components[1].CollisionBox.Top)
+                paddles[1].Position = new Vector2(paddles[1].Position.X, paddles[1].Position.Y + paddleSpeed);
+
+            if (input.IsKeyDown(Keys.Up) && paddles[1].CollisionBox.Top > arena.Components[0].CollisionBox.Bottom)
+                paddles[1].Position = new Vector2(paddles[1].Position.X, paddles[1].Position.Y - paddleSpeed);
 
             base.HandleInput(input);
         }
@@ -169,9 +224,18 @@ namespace Arcadia.Gamestates.Pong
             sb.Begin();
 
             // Draw the arena
-            for (int i = 0; i < v2Arena.Length; i++)
-                sb.Draw(whiteRectangle, rArena[i], Color.White);
+            arena.Draw(sb);
 
+            // Draw the score (in a very hacky way, fix me!! fiiiiix meeee.......)
+            int x = 0;
+            foreach (int s in score)
+            {
+                x += 255;
+                
+                sb.DrawString(font, s.ToString(), new Vector2(x, 50), Color.White);
+            }
+
+            sb.DrawString(font, ball.Direction.ToString(), new Vector2(200, 200), Color.Green);
             // Draw the ball
             ball.Draw(sb);
 

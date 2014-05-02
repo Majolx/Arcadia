@@ -33,7 +33,7 @@ namespace Arcadia.Gamestates.Pong
 
         public Paddle()
         {
-            CollisionBox = new Rectangle(0, 0, 25, 115);
+            CollisionBox = new Rectangle(0, 0, 10, 75);
             Position = new Vector2(0, 0);
             Velocity = new Vector2(0, 0);
             cOuterColor = Color.White;
