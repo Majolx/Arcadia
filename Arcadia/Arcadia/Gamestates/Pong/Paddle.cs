@@ -33,7 +33,7 @@ namespace Arcadia.Gamestates.Pong
 
         public Paddle()
         {
-            CollisionBox = new Rectangle(0, 0, 10, 75);
+            CollisionBox = new Rectangle(0, 0, 10, 80);
             Position = new Vector2(0, 0);
             Velocity = new Vector2(0, 0);
             cOuterColor = Color.White;
@@ -49,7 +49,7 @@ namespace Arcadia.Gamestates.Pong
             Color[] textureData = new Color[Texture.Width * Texture.Height];
             Texture.GetData<Color>(textureData);
 
-            int border =3;
+            int border = 2;
 
             int count = 0;
             for (int y = 0; y < Texture.Height; y++)

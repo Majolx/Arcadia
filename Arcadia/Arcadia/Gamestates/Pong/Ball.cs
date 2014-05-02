@@ -38,7 +38,36 @@ namespace Arcadia.Gamestates.Pong
             Speed = 5f;
         }
 
-        public void Bounce()
+        public void HitPaddle()
+        {
+            Direction += (float)Math.PI;
+
+
+            // Normalize space on -1 to 1
+            // B
+            bounce();
+        }
+
+        public float NormalHitValue(float x)
+        {
+            float y;
+            float A = 0f;
+            float B = 96f;
+            float C = -1f;
+            float D = 1f;
+
+            y = C + (x - A) * (D - C) / (B - A);
+
+            return y;
+        }
+
+
+        public void HitWall()
+        {
+            bounce();
+        }
+
+        private void bounce() 
         {
             Direction = 2*(float)Math.PI - fDirection;
         }

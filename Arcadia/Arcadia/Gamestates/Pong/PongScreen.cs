@@ -17,7 +17,7 @@ namespace Arcadia.Gamestates.Pong
 
         Ball ball;
 
-        int paddleSpeed = 5;
+        int paddleSpeed = 4;
         Vector2[] v2Player = new Vector2[2];
         Paddle[] paddles = new Paddle[2];
         Color[] paddleColors = new Color[2];
@@ -77,6 +77,7 @@ namespace Arcadia.Gamestates.Pong
                                               (int)ball.Position.Y, 
                                               (int)ball.Texture.Width, 
                                               (int)ball.Texture.Height);
+            ball.Speed = 8;
 
             // Save the state of the ball's starting position for respawn
             v2StartingBallPos = ball.Position;
@@ -147,32 +148,44 @@ namespace Arcadia.Gamestates.Pong
             if (ball.CollisionBox.Intersects(arena.Components[0].CollisionBox) &&
                 ball.Direction > pi)
             {
-                ball.Bounce();
+                ball.HitWall();
             }
             
             // Hits the floor
             else if (ball.CollisionBox.Intersects(arena.Components[1].CollisionBox) &&
                 ball.Direction < pi)
             {
-                ball.Bounce();
+                ball.HitWall();
             }
 
             // Hits the left paddle
             else if (ball.CollisionBox.Intersects(paddles[0].CollisionBox) &&
+                ball.CollisionBox.Center.X > paddles[0].CollisionBox.Center.X &&
                 ball.Direction > pi/2 &&
                 ball.Direction < 3*pi/2)
             {
-                ball.Direction += (float)pi;
-                ball.Bounce();
+                float x = ball.CollisionBox.Bottom - paddles[0].Position.Y;
+                x = ball.NormalHitValue(x);
+                x = -x;
+                x = (float)Math.Acos(x);
+                x += 3*(float)MathHelper.PiOver2;
+                x %= (float)MathHelper.TwoPi;
+                ball.Direction = x;
             }
 
             // Hits the right paddle
             else if (ball.CollisionBox.Intersects(paddles[1].CollisionBox) &&
+                ball.CollisionBox.Center.X < paddles[1].CollisionBox.Center.X &&
                 (ball.Direction < pi ||
                  ball.Direction > 3*pi/2))
             {
-                ball.Direction += (float)pi;
-                ball.Bounce();
+                float x = ball.CollisionBox.Bottom - paddles[1].Position.Y;
+                x = ball.NormalHitValue(x);
+                
+                x = (float)Math.Acos(x);
+                x += (float)MathHelper.PiOver2;
+                x %= (float)MathHelper.TwoPi;
+                ball.Direction = x;
             }
 
             // Hits the left side
