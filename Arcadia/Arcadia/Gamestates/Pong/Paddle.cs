@@ -8,12 +8,22 @@ namespace Arcadia.Gamestates.Pong
     {
         #region Fields
 
+
+        private float fSpeed;
         private Color cOuterColor;
         private Color cInnerColor;
+        private bool bAiEnabled;
+
 
         #endregion
 
         #region Properties
+
+        public float Speed
+        {
+            get { return fSpeed; }
+            set { fSpeed = value; }
+        }
 
         public Color OuterColor
         {
@@ -27,6 +37,13 @@ namespace Arcadia.Gamestates.Pong
             set { cInnerColor = value; }
         }
 
+        public bool AiEnabled
+        {
+            get { return bAiEnabled; }
+            set { bAiEnabled = value; }
+        }
+
+
         #endregion
 
         #region Initialization
@@ -36,8 +53,9 @@ namespace Arcadia.Gamestates.Pong
             CollisionBox = new Rectangle(0, 0, 10, 80);
             Position = new Vector2(0, 0);
             Velocity = new Vector2(0, 0);
-            cOuterColor = Color.White;
-            cInnerColor = Color.Black;
+            Speed = 5f;
+            OuterColor = Color.White;
+            InnerColor = Color.Black;
         }
 
         public void FinalizeTexture(GraphicsDevice gd)
@@ -73,5 +91,20 @@ namespace Arcadia.Gamestates.Pong
         }
 
         #endregion
+
+        #region Methods
+
+        public void MoveUp()
+        {
+            Position = new Vector2(Position.X, Position.Y - fSpeed);
+        }
+
+        public void MoveDown()
+        {
+            Position = new Vector2(Position.X, Position.Y + fSpeed);
+        }
+
+        #endregion
+        
     }
 }

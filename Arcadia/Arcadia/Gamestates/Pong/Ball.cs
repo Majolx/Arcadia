@@ -79,8 +79,9 @@ namespace Arcadia.Gamestates.Pong
 
         public void Update(GameTime gameTime)
         {
-            Position = new Vector2(Position.X + fSpeed * ((float)Math.Cos(fDirection)),
-                                   Position.Y + fSpeed * ((float)Math.Sin(fDirection)));
+            float posX = Position.X + fSpeed * ((float)Math.Cos(fDirection));
+            float posY = Position.Y + fSpeed * ((float)Math.Sin(fDirection));
+            Position = new Vector2(posX, posY);
             CollisionBox = new Rectangle((int)Position.X, (int)Position.Y,
                                          CollisionBox.Width,
                                          CollisionBox.Height);

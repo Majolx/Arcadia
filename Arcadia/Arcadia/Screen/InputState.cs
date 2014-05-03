@@ -223,6 +223,13 @@ namespace Arcadia.Screen
         }
 
 
+        public bool IsToggleAISelect(PlayerIndex? controllingPlayer)
+        {
+            PlayerIndex playerIndex;
+
+            return IsNewKeyPress(Keys.P, controllingPlayer, out playerIndex);
+        }
+
         #endregion
     }
 }

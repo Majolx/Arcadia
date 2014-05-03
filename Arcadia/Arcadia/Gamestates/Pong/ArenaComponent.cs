@@ -54,7 +54,7 @@ namespace Arcadia.Gamestates.Pong
             Color[] textureData = new Color[Texture.Width * Texture.Height];
             Texture.GetData<Color>( textureData );
 
-            int dottedDepth = 300;
+            int dottedDepth = 10;
             bool penDown = true;
 
             int count = 0;
@@ -62,9 +62,7 @@ namespace Arcadia.Gamestates.Pong
             {
                 for (int x = 0; x < Texture.Width; x++)
                 {
-                    if (bIsDotted && 
-                       (double)count % (double)dottedDepth == 0 && 
-                                                               x+y != 0)
+                    if (bIsDotted && y % dottedDepth == 0 && x == 0)
                     {
                         if (penDown == true)
                         {

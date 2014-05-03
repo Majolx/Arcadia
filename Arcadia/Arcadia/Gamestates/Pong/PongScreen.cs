@@ -85,15 +85,18 @@ namespace Arcadia.Gamestates.Pong
             // Set up paddles
             paddles[0] = new Paddle( );
             paddles[0].Position = new Vector2(3 * bound, vp.Height / 2 - (paddles[0].CollisionBox.Height / 2));
+            paddles[0].Speed = paddleSpeed;
             paddles[0].OuterColor = Color.LimeGreen;
             paddles[0].InnerColor = Color.Black;
             paddles[0].FinalizeTexture(gd);
 
             paddles[1] = new Paddle( );
             paddles[1].Position = new Vector2(vp.Width - 3*bound - paddles[1].CollisionBox.Width, vp.Height / 2 - (paddles[1].CollisionBox.Height / 2));
+            paddles[1].Speed = paddleSpeed;
             paddles[1].OuterColor = Color.Blue;
             paddles[1].InnerColor = Color.Black;
             paddles[1].FinalizeTexture(gd);
+            paddles[1].AiEnabled = true;
 
 
             // Set up arena
@@ -115,7 +118,7 @@ namespace Arcadia.Gamestates.Pong
 
             components[2] = new ArenaComponent();
             components[2].IsDotted = true;
-            components[2].CollisionBox = new Rectangle(vp.Width / 2 - 20, components[0].CollisionBox.Bottom, 40,
+            components[2].CollisionBox = new Rectangle(vp.Width / 2 -10, components[0].CollisionBox.Bottom, 20,
                                                        components[1].CollisionBox.Top - components[0].CollisionBox.Bottom);
             components[2].Position = new Vector2(components[2].CollisionBox.X, components[2].CollisionBox.Y);
             components[2].Color = Color.LightGray;
@@ -135,9 +138,64 @@ namespace Arcadia.Gamestates.Pong
 
         #region Update and Draw
 
+
+        public override void HandleInput(InputState input)
+        {
+            // Paddle 1 Controls
+            if (input.IsKeyDown(Keys.S) && paddles[0].CollisionBox.Bottom < arena.Components[1].CollisionBox.Top)
+                paddles[0].MoveDown();
+
+            if (input.IsKeyDown(Keys.W) && paddles[0].CollisionBox.Top > arena.Components[0].CollisionBox.Bottom)
+                paddles[0].MoveUp();
+
+            // Paddle 2 Controls
+            if (paddles[1].AiEnabled)
+            {
+                if (paddles[1].CollisionBox.Center.Y > ball.CollisionBox.Center.Y + 20 &&
+                    paddles[1].CollisionBox.Top >= arena.Components[0].CollisionBox.Bottom)
+                {
+                    paddles[1].MoveUp();
+                }
+                else if (paddles[1].CollisionBox.Center.Y < ball.CollisionBox.Center.Y - 20 &&
+                    paddles[1].CollisionBox.Bottom <= arena.Components[1].CollisionBox.Top)
+                {
+                    paddles[1].MoveDown();
+                }
+            }
+            else
+            {
+                if (input.IsKeyDown(Keys.Down) && paddles[1].CollisionBox.Bottom < arena.Components[1].CollisionBox.Top)
+                    paddles[1].MoveDown();
+
+                if (input.IsKeyDown(Keys.Up) && paddles[1].CollisionBox.Top > arena.Components[0].CollisionBox.Bottom)
+                    paddles[1].MoveUp();
+            }
+
+            // Toggle AI
+            if (input.IsToggleAISelect(null))
+            {
+                switch (paddles[1].AiEnabled)
+                {
+                    case false:
+                        paddles[1].AiEnabled = true;
+                        break;
+                    case true:
+                        paddles[1].AiEnabled = false;
+                        break;
+                }
+            }
+            base.HandleInput(input);
+        }
+
+
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
             double pi = Math.PI;
+
+            int red = (int)Math.Abs(Math.Cos(gameTime.ElapsedGameTime.Ticks)*255);
+            int grn = (int)Math.Abs(Math.Sin(gameTime.ElapsedGameTime.Ticks)*255);
+            int blu = red;
+            arena.Components[0].Color = new Color(red, grn, blu);
 
             if (ball.CollisionBox.Intersects(arena.Components[0].CollisionBox) )
             { 
@@ -181,7 +239,6 @@ namespace Arcadia.Gamestates.Pong
             {
                 float x = ball.CollisionBox.Bottom - paddles[1].Position.Y;
                 x = ball.NormalHitValue(x);
-                
                 x = (float)Math.Acos(x);
                 x += (float)MathHelper.PiOver2;
                 x %= (float)MathHelper.TwoPi;
@@ -202,33 +259,32 @@ namespace Arcadia.Gamestates.Pong
                 ResetLevel();
             }
 
-            ball.Update(gameTime);
+            // Update Paddles
+            // Make sure paddles don't overlap arena
+            foreach (Paddle paddle in paddles)
+            {
+                if (paddle.CollisionBox.Top < arena.Components[0].CollisionBox.Bottom)
+                {
+                    paddle.Position += new Vector2(0, arena.Components[0].CollisionBox.Bottom - paddle.CollisionBox.Top);
+                }
+                if (paddle.CollisionBox.Bottom > arena.Components[1].CollisionBox.Top)
+                {
+                    paddle.Position -= new Vector2(0, paddle.CollisionBox.Bottom - arena.Components[1].CollisionBox.Top);
+                }
+            }
 
             for (int i = 0; i < paddles.Length; i++)
             {
                 paddles[i].Update();
             }
 
+            // Update ball
+            ball.Update(gameTime);
+
+            
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
         }
 
-
-        public override void HandleInput(InputState input)
-        {
-            if (input.IsKeyDown(Keys.S) && paddles[0].CollisionBox.Bottom < arena.Components[1].CollisionBox.Top)
-                paddles[0].Position = new Vector2(paddles[0].Position.X, paddles[0].Position.Y + paddleSpeed);
-
-            if (input.IsKeyDown(Keys.W) && paddles[0].CollisionBox.Top > arena.Components[0].CollisionBox.Bottom)
-                paddles[0].Position = new Vector2(paddles[0].Position.X, paddles[0].Position.Y - paddleSpeed);
-
-            if (input.IsKeyDown(Keys.Down) && paddles[1].CollisionBox.Bottom < arena.Components[1].CollisionBox.Top)
-                paddles[1].Position = new Vector2(paddles[1].Position.X, paddles[1].Position.Y + paddleSpeed);
-
-            if (input.IsKeyDown(Keys.Up) && paddles[1].CollisionBox.Top > arena.Components[0].CollisionBox.Bottom)
-                paddles[1].Position = new Vector2(paddles[1].Position.X, paddles[1].Position.Y - paddleSpeed);
-
-            base.HandleInput(input);
-        }
 
         public override void Draw(GameTime gameTime)
         {
