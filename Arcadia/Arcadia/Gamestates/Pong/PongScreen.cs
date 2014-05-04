@@ -17,7 +17,11 @@ namespace Arcadia.Gamestates.Pong
 
         Ball ball;
 
+        // Game settings
         int paddleSpeed = 4;
+        int ballSpeed = 8;
+
+        
         Vector2[] v2Player = new Vector2[2];
         Paddle[] paddles = new Paddle[2];
         Color[] paddleColors = new Color[2];
@@ -36,6 +40,7 @@ namespace Arcadia.Gamestates.Pong
         Texture2D t2dBall;
         
         SpriteFont font;
+        SpriteFont TextFont;
 
         public ContentManager content;
 
@@ -59,6 +64,7 @@ namespace Arcadia.Gamestates.Pong
 
             t2dBall = content.Load<Texture2D>( ContentLoadDir + "pongball" );
             font = content.Load<SpriteFont>("Font/gamefont");
+            TextFont = content.Load<SpriteFont>("Font/ArcadeFont");
             Initialize();
 
             base.LoadContent();
@@ -77,7 +83,7 @@ namespace Arcadia.Gamestates.Pong
                                               (int)ball.Position.Y, 
                                               (int)ball.Texture.Width, 
                                               (int)ball.Texture.Height);
-            ball.Speed = 8;
+            ball.Speed = ballSpeed;
 
             // Save the state of the ball's starting position for respawn
             v2StartingBallPos = ball.Position;
@@ -192,8 +198,8 @@ namespace Arcadia.Gamestates.Pong
         {
             double pi = Math.PI;
 
-            int red = (int)Math.Abs(Math.Cos(gameTime.ElapsedGameTime.Ticks)*255);
-            int grn = (int)Math.Abs(Math.Sin(gameTime.ElapsedGameTime.Ticks)*255);
+            int red = (int)Math.Abs(0);
+            int grn = (int)Math.Abs(225);
             int blu = red;
             arena.Components[0].Color = new Color(red, grn, blu);
 
@@ -223,6 +229,8 @@ namespace Arcadia.Gamestates.Pong
                 ball.Direction < 3*pi/2)
             {
                 float x = ball.CollisionBox.Bottom - paddles[0].Position.Y;
+                if (x < 0) x = 0;
+                if (x > paddles[0].CollisionBox.Height) x = paddles[0].CollisionBox.Height;
                 x = ball.NormalHitValue(x);
                 x = -x;
                 x = (float)Math.Acos(x);
@@ -294,7 +302,11 @@ namespace Arcadia.Gamestates.Pong
 
             // Draw the arena
             arena.Draw(sb);
-
+            
+            // Draw the P prompt
+            sb.DrawString(TextFont, "Press", new Vector2(600, 10), Color.White);
+            sb.DrawString(TextFont, "P", new Vector2(640, 24), Color.White);
+            sb.DrawString(TextFont, "to play", new Vector2(590, 38), Color.White);
             // Draw the score (in a very hacky way, fix me!! fiiiiix meeee.......)
             int x = 0;
             foreach (int s in score)

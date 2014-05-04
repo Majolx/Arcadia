@@ -67,7 +67,7 @@ namespace Arcadia.Gamestates.Pong
             Color[] textureData = new Color[Texture.Width * Texture.Height];
             Texture.GetData<Color>(textureData);
 
-            int border = 2;
+            int border = 1;
 
             int count = 0;
             for (int y = 0; y < Texture.Height; y++)

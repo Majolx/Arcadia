@@ -51,10 +51,10 @@ namespace Arcadia.Gamestates.Pong
         public float NormalHitValue(float x)
         {
             float y;
-            float A = 0f;
-            float B = 96f;
-            float C = -1f;
-            float D = 1f;
+            float A = 0f;  
+            float B = 80f; // Height of paddle plus height of ball
+            float C = -1f; // Lower bound
+            float D = 1f;  // Upper bound
 
             y = C + (x - A) * (D - C) / (B - A);
 
