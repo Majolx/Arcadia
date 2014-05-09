@@ -35,9 +35,11 @@ namespace Arcadia.Screen
 
         SpriteBatch spriteBatch;
         SpriteFont font;
+        SpriteFont arcadeFont;
         Texture2D blankTexture;
 
         string defaultFont = "Font/menufont";
+        string arcadeFontLoc = "Font/VGFont";
         string defaultBlank = "Sprite/blank";
 
         bool isInitialized;
@@ -66,6 +68,11 @@ namespace Arcadia.Screen
         public SpriteFont Font
         {
             get { return font; }
+        }
+
+        public SpriteFont ArcadeFont
+        {
+            get { return arcadeFont; }
         }
 
 
@@ -126,6 +133,7 @@ namespace Arcadia.Screen
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             font = content.Load<SpriteFont>(defaultFont);
+            arcadeFont = content.Load<SpriteFont>(arcadeFontLoc);
             blankTexture = content.Load<Texture2D>(defaultBlank);
 
             // Tell each of the screens to load their content.

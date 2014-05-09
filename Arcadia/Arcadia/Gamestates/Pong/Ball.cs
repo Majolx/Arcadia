@@ -58,6 +58,9 @@ namespace Arcadia.Gamestates.Pong
 
             y = C + (x - A) * (D - C) / (B - A);
 
+            if (y < -.95) y = -.95f;
+            if (y > .95) y = .95f;
+
             return y;
         }
 

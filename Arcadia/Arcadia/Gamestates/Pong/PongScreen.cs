@@ -27,8 +27,7 @@ namespace Arcadia.Gamestates.Pong
         Color[] paddleColors = new Color[2];
         Vector2 v2StartingBallPos;
 
-        int[] score = { 0, 0 };
-
+        DrawableScore score;
 
         int bound = 5;
 
@@ -39,7 +38,7 @@ namespace Arcadia.Gamestates.Pong
 
         Texture2D t2dBall;
         
-        SpriteFont font;
+        SpriteFont scoreFont;
         SpriteFont TextFont;
 
         public ContentManager content;
@@ -63,8 +62,8 @@ namespace Arcadia.Gamestates.Pong
             string ContentLoadDir = "Sprite/Pong/";
 
             t2dBall = content.Load<Texture2D>( ContentLoadDir + "pongball" );
-            font = content.Load<SpriteFont>("Font/gamefont");
-            TextFont = content.Load<SpriteFont>("Font/ArcadeFont");
+            scoreFont = content.Load<SpriteFont>("Font/VectorBattle");
+            TextFont = ScreenManager.ArcadeFont;
             Initialize();
 
             base.LoadContent();
@@ -131,6 +130,11 @@ namespace Arcadia.Gamestates.Pong
             components[2].FinalizeTexture(gd);
 
             arena = new Arena(components);
+
+            // Set up score
+            score = new DrawableScore(2);
+            score.Positions[0] = new Vector2(vp.Width / 2 - scoreFont.MeasureString(score.Scores[0].ToString()).X + 15, 50); ;
+            score.Positions[1] = new Vector2(vp.Width / 2 + 15, 50);
         }
 
 
@@ -198,11 +202,6 @@ namespace Arcadia.Gamestates.Pong
         {
             double pi = Math.PI;
 
-            int red = (int)Math.Abs(0);
-            int grn = (int)Math.Abs(225);
-            int blu = red;
-            arena.Components[0].Color = new Color(red, grn, blu);
-
             if (ball.CollisionBox.Intersects(arena.Components[0].CollisionBox) )
             { 
                 pi = Math.PI;
@@ -253,17 +252,21 @@ namespace Arcadia.Gamestates.Pong
                 ball.Direction = x;
             }
 
+            Viewport vp = ScreenManager.GraphicsDevice.Viewport;
+
             // Hits the left side
             if (ball.CollisionBox.Left < 0)
             {
-                score[1]++;
+                score.AddScore(1);
+                score.Positions[1] = new Vector2(vp.Width / 2 + 15, 50);
                 ResetLevel();
             }
 
             // Hits the right side
             if (ball.CollisionBox.Right > ScreenManager.Game.GraphicsDevice.Viewport.Width)
             {
-                score[0]++;
+                score.AddScore(0);
+                score.Positions[0] = new Vector2(vp.Width / 2 - scoreFont.MeasureString(score.Scores[0].ToString()).X - 15, 50);
                 ResetLevel();
             }
 
@@ -289,7 +292,7 @@ namespace Arcadia.Gamestates.Pong
             // Update ball
             ball.Update(gameTime);
 
-            
+
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
         }
 
@@ -304,19 +307,11 @@ namespace Arcadia.Gamestates.Pong
             arena.Draw(sb);
             
             // Draw the P prompt
-            sb.DrawString(TextFont, "Press", new Vector2(600, 10), Color.White);
-            sb.DrawString(TextFont, "P", new Vector2(640, 24), Color.White);
-            sb.DrawString(TextFont, "to play", new Vector2(590, 38), Color.White);
-            // Draw the score (in a very hacky way, fix me!! fiiiiix meeee.......)
-            int x = 0;
-            foreach (int s in score)
-            {
-                x += 255;
-                
-                sb.DrawString(font, s.ToString(), new Vector2(x, 50), Color.White);
-            }
+            sb.DrawString(TextFont, "Press P to play", new Vector2(600, 25), Color.Black);
 
-            sb.DrawString(font, ball.Direction.ToString(), new Vector2(200, 200), Color.Green);
+            // Draw the score
+            score.Draw(sb, scoreFont);
+
             // Draw the ball
             ball.Draw(sb);
 

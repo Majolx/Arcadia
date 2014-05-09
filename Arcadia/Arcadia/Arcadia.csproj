@@ -118,8 +118,11 @@
     <Compile Include="Gamestates\Pong\ArenaComponent.cs" />
     <Compile Include="Gamestates\Pong\Ball.cs" />
     <Compile Include="Gamestates\Pong\ColorChanger.cs" />
+    <Compile Include="Gamestates\Pong\DrawableScore.cs" />
     <Compile Include="Gamestates\Pong\Paddle.cs" />
+    <Compile Include="Gamestates\Pong\PauseScreen.cs" />
     <Compile Include="Gamestates\Pong\PongScreen.cs" />
+    <Compile Include="Gamestates\Pong\ScoreKeeper.cs" />
     <Compile Include="Gamestates\Tetris\TetrisGameScreen.cs">
       <SubType>Code</SubType>
     </Compile>
