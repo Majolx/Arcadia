@@ -134,6 +134,7 @@
     <Compile Include="Graphics\StaticSprite.cs" />
     <Compile Include="Graphics\TextureGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Screen\CreditsScreen.cs" />
     <Compile Include="Screen\GameScreen.cs" />
     <Compile Include="Screen\InputState.cs" />
     <Compile Include="Screen\MenuEntry.cs" />

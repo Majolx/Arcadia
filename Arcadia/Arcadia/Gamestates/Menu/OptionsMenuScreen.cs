@@ -20,14 +20,17 @@ namespace Arcadia.Gamestates.Menu
         {
             // Create our menu entries.
             MenuEntry displayMenuEntry = new MenuEntry("Display");
+            MenuEntry creditsEntry = new MenuEntry("Credits");
             MenuEntry backMenuEntry = new MenuEntry("Go Back");
 
             // Hook up menu event handlers.
             displayMenuEntry.Selected += DisplayMenuEntrySelected;
+            creditsEntry.Selected += CreditsEntrySelected;
             backMenuEntry.Selected += OnCancel;
 
             // Add entries to the menu.
             MenuEntries.Add(displayMenuEntry);
+            MenuEntries.Add(creditsEntry);
             MenuEntries.Add(backMenuEntry);
         }
 
@@ -45,6 +48,10 @@ namespace Arcadia.Gamestates.Menu
         }
 
 
+        void CreditsEntrySelected(object sender, PlayerIndexEventArgs e)
+        {
+            ScreenManager.AddScreen(new CreditsScreen(), e.PlayerIndex);
+        }
         /// <summary>
         /// Exit this screen.
         /// </summary>
