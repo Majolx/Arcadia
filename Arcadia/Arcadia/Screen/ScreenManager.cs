@@ -38,7 +38,7 @@ namespace Arcadia.Screen
         SpriteFont arcadeFont;
         Texture2D blankTexture;
 
-        string defaultFont = "Font/menufont";
+        string defaultFont = "Font/VGFont";
         string arcadeFontLoc = "Font/VGFont";
         string defaultBlank = "Sprite/blank";
 

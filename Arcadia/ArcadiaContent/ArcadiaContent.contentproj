@@ -211,14 +211,14 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Arcadia.png">
+    <Compile Include="Sprite\Arcadia.png">
       <Name>Arcadia</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArcadiaShimmer.png">
+    <Compile Include="Sprite\ArcadiaShimmer.png">
       <Name>ArcadiaShimmer</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
@@ -236,6 +236,13 @@
       <Name>VGFont</Name>
       <Importer>TextureImporter</Importer>
       <Processor>FontTextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Sprite\backGroundForArcadia.png">
+      <Name>backGroundForArcadia</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

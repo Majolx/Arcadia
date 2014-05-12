@@ -70,7 +70,7 @@ namespace Arcadia
             // Activate the first screens.
             // Format:
             // screenManager.AddScreen( Screen to Add, Controlling Player)
-            screenManager.AddScreen(new MainMenuScreen(), null);
+            screenManager.AddScreen(new MenuBackground(), null);
         }
 
 

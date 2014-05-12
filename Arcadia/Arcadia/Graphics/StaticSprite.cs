@@ -1,6 +1,7 @@
 ﻿#region Using Statements
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Arcadia.Screen;
 #endregion
 
 namespace Arcadia.Graphics
@@ -10,6 +11,8 @@ namespace Arcadia.Graphics
         #region Fields
 
         private bool bIsCollidable;
+        private bool bIsVisible;
+        private bool bWillStretchToCollisionBox;
         private Rectangle rCollisionBox;
         private Texture2D t2dTexture;
         private Vector2 v2Position;
@@ -21,8 +24,8 @@ namespace Arcadia.Graphics
         #region Properties
 
         /// <summary>
-        /// T/F: The collision box of this sprite is collidable.
-        /// Default: False
+        /// Indicates whether the sprite is collidable or not.
+        /// False by default.
         /// </summary>
         public bool IsCollidable
         {
@@ -30,18 +33,52 @@ namespace Arcadia.Graphics
             set { bIsCollidable = value; }
         }
 
+
+        /// <summary>
+        /// Indicates whether the sprite is visible or not.
+        /// True by default.
+        /// </summary>
+        public bool IsVisible
+        {
+            get { return bIsVisible; }
+            set { bIsVisible = value; }
+        }
+
+
+        /// <summary>
+        /// Indicates whether the sprite will stretch to its collision box.
+        /// False by default.
+        /// </summary>
+        public bool WillStretchToCollisionBox
+        {
+            get { return bWillStretchToCollisionBox; }
+            set { bWillStretchToCollisionBox = value; }
+        }
+
+
+        /// <summary>
+        /// The collision box of the sprite.
+        /// </summary>
         public Rectangle CollisionBox
         {
             get { return rCollisionBox; }
             set { rCollisionBox = value; }
         }
 
+
+        /// <summary>
+        /// The texture used on the sprite.
+        /// </summary>
         public Texture2D Texture
         {
             get { return t2dTexture; }
             set { t2dTexture = value; }
         }
 
+
+        /// <summary>
+        /// The position of the sprite.
+        /// </summary>
         public Vector2 Position
         {
             get { return v2Position; }
@@ -52,6 +89,10 @@ namespace Arcadia.Graphics
             }
         }
 
+
+        /// <summary>
+        /// The velocity of the sprite.
+        /// </summary>
         public Vector2 Velocity
         {
             get { return v2Velocity; }
@@ -62,6 +103,10 @@ namespace Arcadia.Graphics
             }
         }
 
+
+        /// <summary>
+        /// The color overlay of the sprite.
+        /// </summary>
         public Color Color
         {
             get { return cColor; }
@@ -75,6 +120,7 @@ namespace Arcadia.Graphics
         public StaticSprite()
         {
             IsCollidable = false;
+            IsVisible = true;
             CollisionBox = new Rectangle(0, 0, 1, 1);
             Position = new Vector2(0, 0);
             Velocity = new Vector2(0, 0);
@@ -93,7 +139,17 @@ namespace Arcadia.Graphics
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(t2dTexture, v2Position, cColor);
+            if (bIsVisible)
+            {
+                if (bWillStretchToCollisionBox)
+                {
+                    spriteBatch.Draw(t2dTexture, rCollisionBox, cColor);
+                }
+                else
+                {
+                    spriteBatch.Draw(t2dTexture, v2Position, cColor);
+                }
+            }
         }
 
         #endregion

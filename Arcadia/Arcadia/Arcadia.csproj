@@ -112,6 +112,7 @@
     <Compile Include="Gamestates\Loading\LoadingScreen.cs" />
     <Compile Include="Gamestates\Menu\DisplayMenuScreen.cs" />
     <Compile Include="Gamestates\Menu\MainMenuScreen.cs" />
+    <Compile Include="Gamestates\Menu\MenuBackground.cs" />
     <Compile Include="Gamestates\Menu\NewGameMenuScreen.cs" />
     <Compile Include="Gamestates\Menu\OptionsMenuScreen.cs" />
     <Compile Include="Gamestates\Pong\Arena.cs" />

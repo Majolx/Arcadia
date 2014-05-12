@@ -133,7 +133,7 @@ namespace Arcadia.Gamestates.Pong
 
             // Set up score
             score = new DrawableScore(2);
-            score.Positions[0] = new Vector2(vp.Width / 2 - scoreFont.MeasureString(score.Scores[0].ToString()).X + 15, 50); ;
+            score.Positions[0] = new Vector2(vp.Width / 2 - scoreFont.MeasureString(score.Scores[0].ToString()).X - 15, 50); ;
             score.Positions[1] = new Vector2(vp.Width / 2 + 15, 50);
         }
 
@@ -179,6 +179,14 @@ namespace Arcadia.Gamestates.Pong
 
                 if (input.IsKeyDown(Keys.Up) && paddles[1].CollisionBox.Top > arena.Components[0].CollisionBox.Bottom)
                     paddles[1].MoveUp();
+            }
+
+            // Pause game
+            PlayerIndex playerIndex;
+            if (input.IsNewKeyPress(Keys.Escape, null, out playerIndex))
+            {
+
+                ScreenManager.AddScreen(new PauseScreen("PAUSE"), null);
             }
 
             // Toggle AI

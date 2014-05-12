@@ -27,7 +27,7 @@ namespace Arcadia.Gamestates.Menu
         /// Constructor fills in the menu contents.
         /// </summary>
         public MainMenuScreen()
-            : base("Arcadia")
+            : base("")
         {
             // Create our menu entries.
             MenuEntry playGameMenuEntry = new MenuEntry("Play Game");

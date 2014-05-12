@@ -156,7 +156,7 @@ namespace Arcadia.Screen
             float transitionOffset = (float)Math.Pow(TransitionPosition, 2);
 
             // start at Y = 175; each X value is generated per entry
-            Vector2 position = new Vector2(0f, 175f);
+            Vector2 position = new Vector2(0f, 260f);
 
             // update each menu entry's location in turn
             for (int i = 0; i < menuEntries.Count; i++)
@@ -175,7 +175,7 @@ namespace Arcadia.Screen
                 menuEntry.Position = position;
 
                 // move down for the next entry the size of this entry
-                position.Y += menuEntry.GetHeight(this);
+                position.Y += menuEntry.GetHeight(this) + 10;
             }
         }
 
@@ -228,7 +228,7 @@ namespace Arcadia.Screen
             float transitionOffset = (float)Math.Pow(TransitionPosition, 2);
 
             // Draw the menu title centered on the screen
-            Vector2 titlePosition = new Vector2(graphics.Viewport.Width / 2, 80);
+            Vector2 titlePosition = new Vector2(graphics.Viewport.Width / 2, 220);
             Vector2 titleOrigin = font.MeasureString(menuTitle) / 2;
             Color titleColor = new Color(192, 192, 192) * TransitionAlpha;
             float titleScale = 1.25f;
