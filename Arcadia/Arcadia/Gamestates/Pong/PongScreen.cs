@@ -38,12 +38,13 @@ namespace Arcadia.Gamestates.Pong
 
         Texture2D t2dBall;
         
-        SpriteFont scoreFont;
+        SpriteFont scoreFontOne;
+        SpriteFont scoreFontTwo;
         SpriteFont TextFont;
 
         SoundEffect beep;   // For wall collisions
         SoundEffect boop;   // For paddle collisions
-        SoundEffect brrr;   // For pressing P to play
+        SoundEffect brrr;   // Score buzzer
 
         public ContentManager content;
 
@@ -66,7 +67,8 @@ namespace Arcadia.Gamestates.Pong
             string ContentLoadDir = "Sprite/Pong/";
 
             t2dBall = content.Load<Texture2D>( ContentLoadDir + "pongball" );
-            scoreFont = content.Load<SpriteFont>("Font/VectorBattle");
+            scoreFontOne = content.Load<SpriteFont>("Font/PongScoreGreen");
+            scoreFontTwo = content.Load<SpriteFont>("Font/PongScoreBlue");
             TextFont = ScreenManager.ArcadeFont;
             Initialize();
 
@@ -137,13 +139,17 @@ namespace Arcadia.Gamestates.Pong
 
             // Set up score
             score = new DrawableScore(2);
-            score.Positions[0] = new Vector2(vp.Width / 2 - scoreFont.MeasureString(score.Scores[0].ToString()).X - 15, 50); ;
+            score.Positions[0] = new Vector2(vp.Width / 2 - scoreFontOne.MeasureString(score.Scores[0].ToString()).X - 15, 50); ;
             score.Positions[1] = new Vector2(vp.Width / 2 + 15, 50);
+            score.Fonts[0] = scoreFontOne;
+            score.Fonts[1] = scoreFontTwo;
 
             // Initialize audio
             beep = content.Load<SoundEffect>("Sounds/beep");
             boop = content.Load<SoundEffect>("Sounds/boop");
             brrr = content.Load<SoundEffect>("Sounds/brrr");
+            
+            
         }
 
 
@@ -151,6 +157,7 @@ namespace Arcadia.Gamestates.Pong
 
         public void ResetLevel()
         {
+            
             ball.ReverseDirection();
             ball.Position = v2StartingBallPos;
         }
@@ -200,7 +207,6 @@ namespace Arcadia.Gamestates.Pong
             // Toggle AI
             if (input.IsToggleAISelect(null))
             {
-                brrr.Play();
                 switch (paddles[1].AiEnabled)
                 {
                     case false:
@@ -239,7 +245,7 @@ namespace Arcadia.Gamestates.Pong
                 ball.Direction > MathHelper.PiOver2 &&
                 ball.Direction < 3*MathHelper.PiOver2)
             {
-                boop.Play();
+                boop.Play(1.0f, 0.0f, -1.0f);
                 float x = ball.CollisionBox.Bottom - paddles[0].Position.Y;
                 if (x < 0) x = 0;
                 if (x > paddles[0].CollisionBox.Height) x = paddles[0].CollisionBox.Height;
@@ -257,7 +263,7 @@ namespace Arcadia.Gamestates.Pong
                 (ball.Direction < Math.PI ||
                  ball.Direction > 3*MathHelper.PiOver2))
             {
-                boop.Play();
+                boop.Play(1.0f, 0.0f, 1.0f);
                 float x = ball.CollisionBox.Bottom - paddles[1].Position.Y;
                 x = ball.NormalHitValue(x);
                 x = (float)Math.Acos(x);
@@ -271,6 +277,7 @@ namespace Arcadia.Gamestates.Pong
             // Hits the left side
             if (ball.CollisionBox.Left < 0)
             {
+                brrr.Play(0.5f, 0.0f, -1.0f);
                 score.AddScore(1);
                 score.Positions[1] = new Vector2(vp.Width / 2 + 15, 50);
                 ResetLevel();
@@ -279,8 +286,9 @@ namespace Arcadia.Gamestates.Pong
             // Hits the right side
             if (ball.CollisionBox.Right > ScreenManager.Game.GraphicsDevice.Viewport.Width)
             {
+                brrr.Play(0.5f, 0.0f, 1.0f);
                 score.AddScore(0);
-                score.Positions[0] = new Vector2(vp.Width / 2 - scoreFont.MeasureString(score.Scores[0].ToString()).X - 15, 50);
+                score.Positions[0] = new Vector2(vp.Width / 2 - scoreFontOne.MeasureString(score.Scores[0].ToString()).X - 15, 50);
                 ResetLevel();
             }
 
@@ -324,7 +332,7 @@ namespace Arcadia.Gamestates.Pong
             sb.DrawString(TextFont, "Press P to play", new Vector2(600, 25), Color.Black);
 
             // Draw the score
-            score.Draw(sb, scoreFont);
+            score.Draw(sb);
 
             // Draw the ball
             ball.Draw(sb);

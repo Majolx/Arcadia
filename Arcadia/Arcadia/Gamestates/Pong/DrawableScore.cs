@@ -7,6 +7,7 @@ namespace Arcadia.Gamestates.Pong
     {
         private Vector2[] v2Positions;
         private Color[] cColors;
+        private SpriteFont[] sfFonts;
 
 
         public Vector2[] Positions
@@ -21,11 +22,18 @@ namespace Arcadia.Gamestates.Pong
             set { cColors = value; }
         }
 
+        public SpriteFont[] Fonts
+        {
+            get { return sfFonts; }
+            set { sfFonts = value; }
+        }
+
         public DrawableScore()
             : base()
         {
             v2Positions = null;
             cColors = null;
+            sfFonts = null;
         }
 
         public DrawableScore(int numOfPlayers)
@@ -33,6 +41,7 @@ namespace Arcadia.Gamestates.Pong
         {
             v2Positions = new Vector2[Players];
             cColors = new Color[Players];
+            sfFonts = new SpriteFont[Players];
 
             for (int i = 0; i < Players; i++)
             {
@@ -41,11 +50,11 @@ namespace Arcadia.Gamestates.Pong
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch, SpriteFont font)
+        public void Draw(SpriteBatch spriteBatch)
         {
             for (int i = 0; i < Players; i++)
             {
-                spriteBatch.DrawString(font, Scores[i].ToString(), Positions[i], Colors[i]);
+                spriteBatch.DrawString(Fonts[i], Scores[i].ToString(), Positions[i], Colors[i]);
             }
         }
     }

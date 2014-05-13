@@ -1,0 +1,16 @@
+[Error] 5/13/2014 1:10:57 AM Access to the path 'C:\Program Files\SpriteFont 2\Metrics.xml' is denied.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share)
+   at System.Xml.XmlWriter.Create(String outputFileName, XmlWriterSettings settings)
+   at System.Xml.Linq.XDocument.Save(String fileName, SaveOptions options)
+   at System.Xml.Linq.XDocument.Save(String fileName)
+   at Nubik.Tools.SpriteFont.Media.TextureBuilder.SaveMetrics(XDocument metrics)
+[Error] 5/13/2014 1:11:31 AM Access to the path 'C:\Program Files\SpriteFont 2\Metrics.xml' is denied.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share)
+   at System.Xml.XmlWriter.Create(String outputFileName, XmlWriterSettings settings)
+   at System.Xml.Linq.XDocument.Save(String fileName, SaveOptions options)
+   at System.Xml.Linq.XDocument.Save(String fileName)
+   at Nubik.Tools.SpriteFont.Media.TextureBuilder.SaveMetrics(XDocument metrics)
