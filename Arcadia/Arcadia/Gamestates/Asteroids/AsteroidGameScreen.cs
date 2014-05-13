@@ -15,12 +15,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Arcadia;
 using Arcadia.Screen;
 using Arcadia.Graphics;
+using Microsoft.Xna.Framework.Media;
 #endregion
 
 namespace Arcadia.Gamestates.Asteroids
@@ -64,6 +66,13 @@ namespace Arcadia.Gamestates.Asteroids
 
         //boolean for game over
         bool gameOver = false;
+
+        //sounds
+        SoundEffect shotEffect;
+        SoundEffect backgroundMusic;
+
+        //sound counter
+        int musicCounter = 180;
 
         /// <summary>
         /// A screen-specific content manager.
@@ -119,6 +128,10 @@ namespace Arcadia.Gamestates.Asteroids
 
             //Font
             scoreFont = content.Load<SpriteFont>("Font/asteroidFont");
+
+            //sound
+            shotEffect = content.Load<SoundEffect>("Sounds/shotSoundEffect");
+            backgroundMusic = content.Load<SoundEffect>("Sounds/stage6");
 
             Initialize();
 
@@ -207,7 +220,10 @@ namespace Arcadia.Gamestates.Asteroids
 
                 //space to shoot
                 if (currentKBState.IsKeyUp(Keys.Space) && previousKBState.IsKeyDown(Keys.Space))
+                {
                     FireShot();
+                    shotEffect.Play();
+                }
             }
 
             //when game over
@@ -320,6 +336,14 @@ namespace Arcadia.Gamestates.Asteroids
         /// </summary>
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
+            musicCounter++;
+
+            if (musicCounter > 220)
+            {
+                backgroundMusic.Play();
+                musicCounter = 0;
+            }
+
             //Function call for updating ship movement
             UpdateShip();
 
