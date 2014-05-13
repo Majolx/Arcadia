@@ -74,6 +74,11 @@ namespace Arcadia.Gamestates.Menu
         /// </summary>
         void AsteroidsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
+            foreach (GameScreen screen in ScreenManager.GetScreens())
+            {
+                screen.ExitScreen();
+            }
+
             ScreenManager.AddScreen(new AsteroidGameScreen(), e.PlayerIndex);
         }
 
@@ -83,6 +88,11 @@ namespace Arcadia.Gamestates.Menu
         /// </summary>
         void TetrisMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
+            foreach (GameScreen screen in ScreenManager.GetScreens())
+            {
+                screen.ExitScreen();
+            }
+
             ScreenManager.AddScreen(new TetrisGameScreen(), e.PlayerIndex);
         }
 
