@@ -22,7 +22,6 @@ using Microsoft.Xna.Framework.Input;
 using Arcadia;
 using Arcadia.Screen;
 using Arcadia.Graphics;
-using Microsoft.Xna.Framework.Media;
 #endregion
 
 namespace Arcadia.Gamestates.Asteroids
@@ -72,7 +71,7 @@ namespace Arcadia.Gamestates.Asteroids
         SoundEffect backgroundMusic;
 
         //sound counter
-        int musicCounter = 180;
+        int musicCounter = 220;
 
         /// <summary>
         /// A screen-specific content manager.

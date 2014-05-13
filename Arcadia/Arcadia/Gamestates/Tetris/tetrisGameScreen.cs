@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -83,6 +84,13 @@ namespace Arcadia.Gamestates.Tetris
         //gameover
         bool gameOver = false;
 
+        //sounds
+        SoundEffect blockFall;
+        SoundEffect tetrisMusic;
+
+        //counter for music
+        int tetrisMusicCounter = 200;
+
         public ContentManager content;
 
         #endregion
@@ -129,6 +137,9 @@ namespace Arcadia.Gamestates.Tetris
             rightBorder     = new Sprite[22];
             bottomBorder    = new Sprite[40];
 
+            blockFall       = content.Load<SoundEffect>("Sounds/blockFall");
+            tetrisMusic     = content.Load<SoundEffect>("Sounds/stage8");
+            
             base.LoadContent();
         }
 
@@ -461,6 +472,14 @@ namespace Arcadia.Gamestates.Tetris
 
             if (!gameOver)
             {
+                tetrisMusicCounter++;
+
+                if (tetrisMusicCounter > 220)
+                {
+                    tetrisMusic.Play();
+                    tetrisMusicCounter = 0;
+                }
+
                 if (done)
                 {
                     CreateShape();
@@ -476,7 +495,9 @@ namespace Arcadia.Gamestates.Tetris
                         currentArray[1].Position = new Vector2(currentArray[1].Position.X, currentArray[1].Position.Y + 20);
                         currentArray[2].Position = new Vector2(currentArray[2].Position.X, currentArray[2].Position.Y + 20);
                         currentArray[3].Position = new Vector2(currentArray[3].Position.X, currentArray[3].Position.Y + 20);
-
+                        
+                        blockFall.Play();
+                        
                         count = 0;
                     }
 
