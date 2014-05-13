@@ -22,7 +22,6 @@ namespace Arcadia.Gamestates.Pong
         int ballSpeed = 8;
 
         
-        Vector2[] v2Player = new Vector2[2];
         Paddle[] paddles = new Paddle[2];
         Color[] paddleColors = new Color[2];
         Vector2 v2StartingBallPos;
@@ -185,7 +184,6 @@ namespace Arcadia.Gamestates.Pong
             PlayerIndex playerIndex;
             if (input.IsNewKeyPress(Keys.Escape, null, out playerIndex))
             {
-
                 ScreenManager.AddScreen(new PauseScreen("PAUSE"), null);
             }
 
@@ -208,23 +206,16 @@ namespace Arcadia.Gamestates.Pong
 
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
-            double pi = Math.PI;
-
-            if (ball.CollisionBox.Intersects(arena.Components[0].CollisionBox) )
-            { 
-                pi = Math.PI;
-            }
-
             // Hits the celing
             if (ball.CollisionBox.Intersects(arena.Components[0].CollisionBox) &&
-                ball.Direction > pi)
+                ball.Direction > Math.PI)
             {
                 ball.HitWall();
             }
             
             // Hits the floor
             else if (ball.CollisionBox.Intersects(arena.Components[1].CollisionBox) &&
-                ball.Direction < pi)
+                ball.Direction < Math.PI)
             {
                 ball.HitWall();
             }
@@ -232,8 +223,8 @@ namespace Arcadia.Gamestates.Pong
             // Hits the left paddle
             else if (ball.CollisionBox.Intersects(paddles[0].CollisionBox) &&
                 ball.CollisionBox.Center.X > paddles[0].CollisionBox.Center.X &&
-                ball.Direction > pi/2 &&
-                ball.Direction < 3*pi/2)
+                ball.Direction > MathHelper.PiOver2 &&
+                ball.Direction < 3*MathHelper.PiOver2)
             {
                 float x = ball.CollisionBox.Bottom - paddles[0].Position.Y;
                 if (x < 0) x = 0;
@@ -249,8 +240,8 @@ namespace Arcadia.Gamestates.Pong
             // Hits the right paddle
             else if (ball.CollisionBox.Intersects(paddles[1].CollisionBox) &&
                 ball.CollisionBox.Center.X < paddles[1].CollisionBox.Center.X &&
-                (ball.Direction < pi ||
-                 ball.Direction > 3*pi/2))
+                (ball.Direction < Math.PI ||
+                 ball.Direction > 3*MathHelper.PiOver2))
             {
                 float x = ball.CollisionBox.Bottom - paddles[1].Position.Y;
                 x = ball.NormalHitValue(x);

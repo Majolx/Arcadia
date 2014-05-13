@@ -17,20 +17,13 @@ namespace Arcadia.Screen
                                      "",
                                      "Created by",
                                      "",
-                                     "Rockstars and hot cheetohs",
+                                     "Chips and caffeine",
                                      "",
                                      "",
                                      "Developed by",
                                      "",
                                      "Norlan Prudente",
-                                     "Mathew Larribas",
-                                     "",
-                                     "",
-                                     "",
-                                     "",
-                                     "",
-                                     "",
-                                     "fin." };
+                                     "Mathew Larribas" };
 
         private Vector2[] v2Position;
 
@@ -66,11 +59,15 @@ namespace Arcadia.Screen
             }
             else
                 isBoosting = false;
+
+            PlayerIndex playerIndex;
+            if (input.IsNewKeyPress(Keys.Escape, null, out playerIndex))
+                this.ExitScreen();
         }
 
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
-            if (v2Position[v2Position.Length - 1].Y > 250)
+            if (v2Position[v2Position.Length - 1].Y > 0)
             {
                 for (int i = 0; i < v2Position.Length; i++)
                 {
@@ -80,6 +77,10 @@ namespace Arcadia.Screen
                         v2Position[i].Y -= boost;
                     }
                 }
+            }
+            else
+            {
+                this.ExitScreen();
             }
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
         }
