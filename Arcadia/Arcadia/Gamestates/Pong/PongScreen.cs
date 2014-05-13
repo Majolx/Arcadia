@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
 using Arcadia;
 using Arcadia.Graphics;
 using Arcadia.Screen;
@@ -39,6 +40,10 @@ namespace Arcadia.Gamestates.Pong
         
         SpriteFont scoreFont;
         SpriteFont TextFont;
+
+        SoundEffect beep;   // For wall collisions
+        SoundEffect boop;   // For paddle collisions
+        SoundEffect brrr;   // For pressing P to play
 
         public ContentManager content;
 
@@ -134,6 +139,11 @@ namespace Arcadia.Gamestates.Pong
             score = new DrawableScore(2);
             score.Positions[0] = new Vector2(vp.Width / 2 - scoreFont.MeasureString(score.Scores[0].ToString()).X - 15, 50); ;
             score.Positions[1] = new Vector2(vp.Width / 2 + 15, 50);
+
+            // Initialize audio
+            beep = content.Load<SoundEffect>("Sounds/beep");
+            boop = content.Load<SoundEffect>("Sounds/boop");
+            brrr = content.Load<SoundEffect>("Sounds/brrr");
         }
 
 
@@ -190,6 +200,7 @@ namespace Arcadia.Gamestates.Pong
             // Toggle AI
             if (input.IsToggleAISelect(null))
             {
+                brrr.Play();
                 switch (paddles[1].AiEnabled)
                 {
                     case false:
@@ -210,6 +221,7 @@ namespace Arcadia.Gamestates.Pong
             if (ball.CollisionBox.Intersects(arena.Components[0].CollisionBox) &&
                 ball.Direction > Math.PI)
             {
+                beep.Play();
                 ball.HitWall();
             }
             
@@ -217,6 +229,7 @@ namespace Arcadia.Gamestates.Pong
             else if (ball.CollisionBox.Intersects(arena.Components[1].CollisionBox) &&
                 ball.Direction < Math.PI)
             {
+                beep.Play();
                 ball.HitWall();
             }
 
@@ -226,6 +239,7 @@ namespace Arcadia.Gamestates.Pong
                 ball.Direction > MathHelper.PiOver2 &&
                 ball.Direction < 3*MathHelper.PiOver2)
             {
+                boop.Play();
                 float x = ball.CollisionBox.Bottom - paddles[0].Position.Y;
                 if (x < 0) x = 0;
                 if (x > paddles[0].CollisionBox.Height) x = paddles[0].CollisionBox.Height;
@@ -243,6 +257,7 @@ namespace Arcadia.Gamestates.Pong
                 (ball.Direction < Math.PI ||
                  ball.Direction > 3*MathHelper.PiOver2))
             {
+                boop.Play();
                 float x = ball.CollisionBox.Bottom - paddles[1].Position.Y;
                 x = ball.NormalHitValue(x);
                 x = (float)Math.Acos(x);
