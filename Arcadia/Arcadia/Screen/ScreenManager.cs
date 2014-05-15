@@ -42,6 +42,8 @@ namespace Arcadia.Screen
         string arcadeFontLoc = "Font/VGFont";
         string defaultBlank = "Sprite/blank";
 
+        bool paused;
+
         bool isInitialized;
 
         bool traceEnabled;
@@ -73,6 +75,17 @@ namespace Arcadia.Screen
         public SpriteFont ArcadeFont
         {
             get { return arcadeFont; }
+        }
+
+
+        /// <summary>
+        /// If true, then the game is paused, and screens can react to
+        /// this state accordingly.
+        /// </summary>
+        public bool IsPaused
+        {
+            get { return paused; }
+            set { paused = value; }
         }
 
 

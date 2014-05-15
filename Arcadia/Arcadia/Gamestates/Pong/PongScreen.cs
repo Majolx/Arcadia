@@ -22,6 +22,7 @@ namespace Arcadia.Gamestates.Pong
         int paddleSpeed = 4;
         int ballSpeed = 8;
 
+        bool paused = false;
         
         Paddle[] paddles = new Paddle[2];
         Color[] paddleColors = new Color[2];
@@ -45,6 +46,8 @@ namespace Arcadia.Gamestates.Pong
         SoundEffect beep;   // For wall collisions
         SoundEffect boop;   // For paddle collisions
         SoundEffect brrr;   // Score buzzer
+        SoundEffect pause;  // Pause music
+        SoundEffectInstance pauseSndInstance;
 
         public ContentManager content;
 
@@ -64,12 +67,23 @@ namespace Arcadia.Gamestates.Pong
             if (content == null)
                 content = new ContentManager( ScreenManager.Game.Services, "Content" );
 
-            string ContentLoadDir = "Sprite/Pong/";
+            // Load textures
+            t2dBall = content.Load<Texture2D>( "Sprite/Pong/pongball" );
 
-            t2dBall = content.Load<Texture2D>( ContentLoadDir + "pongball" );
+            // Load fonts
             scoreFontOne = content.Load<SpriteFont>("Font/PongScoreGreen");
             scoreFontTwo = content.Load<SpriteFont>("Font/PongScoreBlue");
             TextFont = ScreenManager.ArcadeFont;
+
+            // Load audio
+            beep = content.Load<SoundEffect>("Sounds/beep");
+            boop = content.Load<SoundEffect>("Sounds/boop");
+            brrr = content.Load<SoundEffect>("Sounds/brrr");
+
+            pause = content.Load<SoundEffect>("Sounds/PauseGame");
+            pauseSndInstance = pause.CreateInstance();
+            pauseSndInstance.IsLooped = true;
+
             Initialize();
 
             base.LoadContent();
@@ -142,14 +156,7 @@ namespace Arcadia.Gamestates.Pong
             score.Positions[0] = new Vector2(vp.Width / 2 - scoreFontOne.MeasureString(score.Scores[0].ToString()).X - 15, 50); ;
             score.Positions[1] = new Vector2(vp.Width / 2 + 15, 50);
             score.Fonts[0] = scoreFontOne;
-            score.Fonts[1] = scoreFontTwo;
-
-            // Initialize audio
-            beep = content.Load<SoundEffect>("Sounds/beep");
-            boop = content.Load<SoundEffect>("Sounds/boop");
-            brrr = content.Load<SoundEffect>("Sounds/brrr");
-            
-            
+            score.Fonts[1] = scoreFontTwo;            
         }
 
 
@@ -168,39 +175,54 @@ namespace Arcadia.Gamestates.Pong
         public override void HandleInput(InputState input)
         {
             // Paddle 1 Controls
+            // W - Move Paddle 1 Up
+            if (input.IsKeyDown(Keys.W) && paddles[0].CollisionBox.Top > arena.Components[0].CollisionBox.Bottom)
+                paddles[0].MoveUp();
+
+            // S - Move Paddle 1 Down
             if (input.IsKeyDown(Keys.S) && paddles[0].CollisionBox.Bottom < arena.Components[1].CollisionBox.Top)
                 paddles[0].MoveDown();
 
-            if (input.IsKeyDown(Keys.W) && paddles[0].CollisionBox.Top > arena.Components[0].CollisionBox.Bottom)
-                paddles[0].MoveUp();
+            
 
             // Paddle 2 Controls
             if (paddles[1].AiEnabled)
             {
+                // AI - Move Paddle 2 Up
                 if (paddles[1].CollisionBox.Center.Y > ball.CollisionBox.Center.Y + 20 &&
-                    paddles[1].CollisionBox.Top >= arena.Components[0].CollisionBox.Bottom)
+                    paddles[1].CollisionBox.Top > arena.Components[0].CollisionBox.Bottom)
                 {
                     paddles[1].MoveUp();
                 }
+                // AI - Move Paddle 2 Down
                 else if (paddles[1].CollisionBox.Center.Y < ball.CollisionBox.Center.Y - 20 &&
-                    paddles[1].CollisionBox.Bottom <= arena.Components[1].CollisionBox.Top)
+                    paddles[1].CollisionBox.Bottom < arena.Components[1].CollisionBox.Top)
                 {
                     paddles[1].MoveDown();
                 }
             }
             else
             {
-                if (input.IsKeyDown(Keys.Down) && paddles[1].CollisionBox.Bottom < arena.Components[1].CollisionBox.Top)
-                    paddles[1].MoveDown();
-
+                // Up - Move Paddle 2 Up
                 if (input.IsKeyDown(Keys.Up) && paddles[1].CollisionBox.Top > arena.Components[0].CollisionBox.Bottom)
                     paddles[1].MoveUp();
+
+                // Down - Move Paddle 2 Down
+                if (input.IsKeyDown(Keys.Down) && paddles[1].CollisionBox.Bottom < arena.Components[1].CollisionBox.Top)
+                    paddles[1].MoveDown();
             }
 
             // Pause game
-            PlayerIndex playerIndex;
-            if (input.IsNewKeyPress(Keys.Escape, null, out playerIndex))
+            if (input.IsPauseGame(null) && !paused)
             {
+                // Play the pause game audio
+                pauseSndInstance.Play();
+
+                // Set the global pause game state to true
+                ScreenManager.IsPaused = true;
+
+                // Add a new pause screen.  When the screen is exited, it will
+                // reset the global pause state to false.
                 ScreenManager.AddScreen(new PauseScreen("PAUSE"), null);
             }
 
@@ -223,99 +245,110 @@ namespace Arcadia.Gamestates.Pong
 
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
-            // Hits the celing
-            if (ball.CollisionBox.Intersects(arena.Components[0].CollisionBox) &&
-                ball.Direction > Math.PI)
+            paused = ScreenManager.IsPaused;
+            if (!paused)
             {
-                beep.Play();
-                ball.HitWall();
-            }
-            
-            // Hits the floor
-            else if (ball.CollisionBox.Intersects(arena.Components[1].CollisionBox) &&
-                ball.Direction < Math.PI)
-            {
-                beep.Play();
-                ball.HitWall();
-            }
 
-            // Hits the left paddle
-            else if (ball.CollisionBox.Intersects(paddles[0].CollisionBox) &&
-                ball.CollisionBox.Center.X > paddles[0].CollisionBox.Center.X &&
-                ball.Direction > MathHelper.PiOver2 &&
-                ball.Direction < 3*MathHelper.PiOver2)
-            {
-                boop.Play(1.0f, 0.0f, -1.0f);
-                float x = ball.CollisionBox.Bottom - paddles[0].Position.Y;
-                if (x < 0) x = 0;
-                if (x > paddles[0].CollisionBox.Height) x = paddles[0].CollisionBox.Height;
-                x = ball.NormalHitValue(x);
-                x = -x;
-                x = (float)Math.Acos(x);
-                x += 3*(float)MathHelper.PiOver2;
-                x %= (float)MathHelper.TwoPi;
-                ball.Direction = x;
-            }
-
-            // Hits the right paddle
-            else if (ball.CollisionBox.Intersects(paddles[1].CollisionBox) &&
-                ball.CollisionBox.Center.X < paddles[1].CollisionBox.Center.X &&
-                (ball.Direction < Math.PI ||
-                 ball.Direction > 3*MathHelper.PiOver2))
-            {
-                boop.Play(1.0f, 0.0f, 1.0f);
-                float x = ball.CollisionBox.Bottom - paddles[1].Position.Y;
-                x = ball.NormalHitValue(x);
-                x = (float)Math.Acos(x);
-                x += (float)MathHelper.PiOver2;
-                x %= (float)MathHelper.TwoPi;
-                ball.Direction = x;
-            }
-
-            Viewport vp = ScreenManager.GraphicsDevice.Viewport;
-
-            // Hits the left side
-            if (ball.CollisionBox.Left < 0)
-            {
-                brrr.Play(0.5f, 0.0f, -1.0f);
-                score.AddScore(1);
-                score.Positions[1] = new Vector2(vp.Width / 2 + 15, 50);
-                ResetLevel();
-            }
-
-            // Hits the right side
-            if (ball.CollisionBox.Right > ScreenManager.Game.GraphicsDevice.Viewport.Width)
-            {
-                brrr.Play(0.5f, 0.0f, 1.0f);
-                score.AddScore(0);
-                score.Positions[0] = new Vector2(vp.Width / 2 - scoreFontOne.MeasureString(score.Scores[0].ToString()).X - 15, 50);
-                ResetLevel();
-            }
-
-            // Update Paddles
-            // Make sure paddles don't overlap arena
-            foreach (Paddle paddle in paddles)
-            {
-                if (paddle.CollisionBox.Top < arena.Components[0].CollisionBox.Bottom)
+                // Hits the celing
+                if (ball.CollisionBox.Intersects(arena.Components[0].CollisionBox) &&
+                    ball.Direction > Math.PI)
                 {
-                    paddle.Position += new Vector2(0, arena.Components[0].CollisionBox.Bottom - paddle.CollisionBox.Top);
+                    beep.Play();
+                    ball.HitWall();
                 }
-                if (paddle.CollisionBox.Bottom > arena.Components[1].CollisionBox.Top)
+
+                // Hits the floor
+                else if (ball.CollisionBox.Intersects(arena.Components[1].CollisionBox) &&
+                    ball.Direction < Math.PI)
                 {
-                    paddle.Position -= new Vector2(0, paddle.CollisionBox.Bottom - arena.Components[1].CollisionBox.Top);
+                    beep.Play();
+                    ball.HitWall();
                 }
+
+                // Hits the left paddle
+                else if (ball.CollisionBox.Intersects(paddles[0].CollisionBox) &&
+                    ball.CollisionBox.Center.X > paddles[0].CollisionBox.Center.X &&
+                    ball.Direction > MathHelper.PiOver2 &&
+                    ball.Direction < 3 * MathHelper.PiOver2)
+                {
+                    boop.Play(1.0f, 0.0f, -1.0f);
+                    float x = ball.CollisionBox.Bottom - paddles[0].Position.Y;
+                    if (x < 0) x = 0;
+                    if (x > paddles[0].CollisionBox.Height) x = paddles[0].CollisionBox.Height;
+                    x = ball.NormalHitValue(x);
+                    x = -x;
+                    x = (float)Math.Acos(x);
+                    x += 3 * (float)MathHelper.PiOver2;
+                    x %= (float)MathHelper.TwoPi;
+                    ball.Direction = x;
+                }
+
+                // Hits the right paddle
+                else if (ball.CollisionBox.Intersects(paddles[1].CollisionBox) &&
+                    ball.CollisionBox.Center.X < paddles[1].CollisionBox.Center.X &&
+                    (ball.Direction < Math.PI ||
+                     ball.Direction > 3 * MathHelper.PiOver2))
+                {
+                    boop.Play(1.0f, 0.0f, 1.0f);
+                    float x = ball.CollisionBox.Bottom - paddles[1].Position.Y;
+                    x = ball.NormalHitValue(x);
+                    x = (float)Math.Acos(x);
+                    x += (float)MathHelper.PiOver2;
+                    x %= (float)MathHelper.TwoPi;
+                    ball.Direction = x;
+                }
+
+                Viewport vp = ScreenManager.GraphicsDevice.Viewport;
+
+                // Hits the left side
+                if (ball.CollisionBox.Left < 0)
+                {
+                    brrr.Play(0.5f, 0.0f, -1.0f);
+                    score.AddScore(1);
+                    score.Positions[1] = new Vector2(vp.Width / 2 + 15, 50);
+                    ResetLevel();
+                }
+
+                // Hits the right side
+                if (ball.CollisionBox.Right > ScreenManager.Game.GraphicsDevice.Viewport.Width)
+                {
+                    brrr.Play(0.5f, 0.0f, 1.0f);
+                    score.AddScore(0);
+                    score.Positions[0] = new Vector2(vp.Width / 2 - scoreFontOne.MeasureString(score.Scores[0].ToString()).X - 15, 50);
+                    ResetLevel();
+                }
+
+                // Update Paddles
+                // Make sure paddles don't overlap arena
+                foreach (Paddle paddle in paddles)
+                {
+                    if (paddle.CollisionBox.Top < arena.Components[0].CollisionBox.Bottom)
+                    {
+                        paddle.Position += new Vector2(0, arena.Components[0].CollisionBox.Bottom - paddle.CollisionBox.Top);
+                    }
+                    if (paddle.CollisionBox.Bottom > arena.Components[1].CollisionBox.Top)
+                    {
+                        paddle.Position -= new Vector2(0, paddle.CollisionBox.Bottom - arena.Components[1].CollisionBox.Top);
+                    }
+                }
+
+                for (int i = 0; i < paddles.Length; i++)
+                {
+                    paddles[i].Update();
+                }
+
+                // Update ball
+                ball.Update(gameTime);
+
+
+                // Update audio
+                if (pauseSndInstance.State == SoundState.Playing)
+                {
+                    pauseSndInstance.Stop();
+                }
+
+                base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
             }
-
-            for (int i = 0; i < paddles.Length; i++)
-            {
-                paddles[i].Update();
-            }
-
-            // Update ball
-            ball.Update(gameTime);
-
-
-            base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
         }
 
 

@@ -57,6 +57,9 @@ namespace Arcadia.Gamestates.Pong
                 if (Accepted != null)
                     Accepted(this, new PlayerIndexEventArgs(playerIndex));
 
+                // Reset the global pause state to false.
+                ScreenManager.IsPaused = false;
+
                 ExitScreen();
             }
             else if (input.IsMenuCancel(ControllingPlayer, out playerIndex))
@@ -64,6 +67,9 @@ namespace Arcadia.Gamestates.Pong
                 // Raise the cancelled event, then exit the message box.
                 if (Cancelled != null)
                     Cancelled(this, new PlayerIndexEventArgs(playerIndex));
+
+                // Reset the global pause state to false.
+                ScreenManager.IsPaused = false;
 
                 ExitScreen();
             }
