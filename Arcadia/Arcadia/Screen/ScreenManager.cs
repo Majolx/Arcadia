@@ -315,13 +315,13 @@ namespace Arcadia.Screen
 
         public void RestartGame()
         {
-            UnloadContent();
-
+            // Unload and release all screens
             foreach (GameScreen screen in GetScreens())
             {
                 RemoveScreen(screen);
             }
 
+            // Add the first screen
             this.AddScreen(new Gamestates.Menu.MenuBackground(), null);
         }
 
