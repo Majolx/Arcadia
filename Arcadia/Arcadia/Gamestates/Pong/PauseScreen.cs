@@ -10,6 +10,7 @@ namespace Arcadia.Gamestates.Pong
     {
         #region Fields
 
+        // Message text that goes underneath the pause screen title.
         string message;
 
         #endregion
@@ -29,7 +30,8 @@ namespace Arcadia.Gamestates.Pong
 
         public PauseScreen(string message, bool includeUsageText)
         {
-            const string usageText = "\nPress Esc to quit";
+            const string usageText = "\nPress Esc to unpause" +
+                                     "\nPress Enter or Space to quit";
 
             if (includeUsageText)
                 this.message = message + usageText;
@@ -57,10 +59,11 @@ namespace Arcadia.Gamestates.Pong
                 if (Accepted != null)
                     Accepted(this, new PlayerIndexEventArgs(playerIndex));
 
-                // Reset the global pause state to false.
+                // Reset the global pause state to false
                 ScreenManager.IsPaused = false;
 
-                ExitScreen();
+                // Restart the game
+                ScreenManager.RestartGame();
             }
             else if (input.IsMenuCancel(ControllingPlayer, out playerIndex))
             {

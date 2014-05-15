@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Arcadia.Gamestates;
 #endregion
 
 namespace Arcadia.Screen
@@ -309,6 +310,19 @@ namespace Arcadia.Screen
         public GameScreen[] GetScreens()
         {
             return screens.ToArray();
+        }
+
+
+        public void RestartGame()
+        {
+            UnloadContent();
+
+            foreach (GameScreen screen in GetScreens())
+            {
+                RemoveScreen(screen);
+            }
+
+            this.AddScreen(new Gamestates.Menu.MenuBackground(), null);
         }
 
 

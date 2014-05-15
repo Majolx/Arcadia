@@ -89,6 +89,20 @@ namespace Arcadia.Gamestates.Pong
             base.LoadContent();
         }
 
+
+        public override void UnloadContent()
+        {
+            // Release graphics resources
+            t2dBall.Dispose();
+
+            // Release audio resources
+            beep.Dispose();
+            boop.Dispose();
+            brrr.Dispose();
+            pause.Dispose();
+            pauseSndInstance.Dispose();
+        }
+
         public void Initialize()
         {
             GraphicsDevice gd = ScreenManager.Game.GraphicsDevice;
