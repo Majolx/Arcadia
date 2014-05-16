@@ -20,6 +20,7 @@ using Microsoft.Xna.Framework.Input;
 using Arcadia;
 using Arcadia.Screen;
 using Arcadia.Graphics;
+using Arcadia.Gamestates.Pong;
 #endregion
 
 namespace Arcadia.Gamestates.Tetris
@@ -91,6 +92,9 @@ namespace Arcadia.Gamestates.Tetris
         //counter for music
         int tetrisMusicCounter = 200;
 
+        //pause
+        bool pause = false;
+
         public ContentManager content;
 
         #endregion
@@ -154,7 +158,7 @@ namespace Arcadia.Gamestates.Tetris
 
         public override void HandleInput(InputState input)
         {
-            if (!gameOver)
+            if (!gameOver && !pause)
             {
                 currentKBState = Keyboard.GetState();
 
@@ -440,9 +444,21 @@ namespace Arcadia.Gamestates.Tetris
                             currentArray[1].Position = new Vector2(currentArray[1].Position.X - 20, currentArray[1].Position.Y);
                             currentArray[2].Position = new Vector2(currentArray[2].Position.X - 20, currentArray[2].Position.Y);
                             currentArray[3].Position = new Vector2(currentArray[3].Position.X - 20, currentArray[3].Position.Y);
-                        }
-                    }
+                        }//if
+                    }//for
+                }//if space
+
+                //pause
+                if (input.IsPauseGame(null))
+                {
+                    // Set the global pause game state to true
+                    ScreenManager.IsPaused = true;
+
+                    // Add a new pause screen.  When the screen is exited, it will
+                    // reset the global pause state to false.
+                    ScreenManager.AddScreen(new PauseScreen("PAUSE"), null);
                 }
+
                 previousKBState = currentKBState;
             }
         }
@@ -453,6 +469,8 @@ namespace Arcadia.Gamestates.Tetris
 
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
+            pause = ScreenManager.IsPaused;
+
             if (!setup)
             {
                 for (int i = 0; i < 40; i++)
@@ -470,7 +488,8 @@ namespace Arcadia.Gamestates.Tetris
                 setup = true;
             }
 
-            if (!gameOver)
+            //music
+            if (setup)
             {
                 tetrisMusicCounter++;
 
@@ -479,7 +498,10 @@ namespace Arcadia.Gamestates.Tetris
                     tetrisMusic.Play();
                     tetrisMusicCounter = 0;
                 }
+            }
 
+            if (!gameOver && !pause)
+            {
                 if (done)
                 {
                     CreateShape();

@@ -22,6 +22,7 @@ using Microsoft.Xna.Framework.Input;
 using Arcadia;
 using Arcadia.Screen;
 using Arcadia.Graphics;
+using Arcadia.Gamestates.Pong;
 #endregion
 
 namespace Arcadia.Gamestates.Asteroids
@@ -65,6 +66,7 @@ namespace Arcadia.Gamestates.Asteroids
 
         //boolean for game over
         bool gameOver = false;
+        bool pause = false;
 
         //sounds
         SoundEffect shotEffect;
@@ -179,6 +181,14 @@ namespace Arcadia.Gamestates.Asteroids
             //get the new keyboard state
             currentKBState = Keyboard.GetState();
 
+            if (!ship.Alive)
+            {
+                if (currentKBState.IsKeyDown(Keys.Enter))
+                {
+                    Initialize();
+                }
+            }
+
             if (ship.Alive)
             {
                 //make the ship move in the direction it's facing
@@ -223,13 +233,26 @@ namespace Arcadia.Gamestates.Asteroids
                     FireShot();
                     shotEffect.Play();
                 }
+
+                //pause
+                if (input.IsPauseGame(null))
+                {
+                    // Set the global pause game state to true
+                    ScreenManager.IsPaused = true;
+
+                    // Add a new pause screen.  When the screen is exited, it will
+                    // reset the global pause state to false.
+                    ScreenManager.AddScreen(new PauseScreen("PAUSE"), null);
+                }
             }
 
             //when game over
             if (gameOver)
             {
                 if (ship.Alive)
+                {
                     ship.Kill();
+                }
 
                 if (currentKBState.IsKeyDown(Keys.Enter))
                 {
@@ -335,25 +358,30 @@ namespace Arcadia.Gamestates.Asteroids
         /// </summary>
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
-            musicCounter++;
+            pause = ScreenManager.IsPaused;
 
+            //music
+            musicCounter++;
             if (musicCounter > 220)
             {
                 backgroundMusic.Play();
                 musicCounter = 0;
             }
 
-            //Function call for updating ship movement
-            UpdateShip();
+            if (!pause)
+            {
+                //Function call for updating ship movement
+                UpdateShip();
 
-            //Function call for updating asteroids
-            UpdateAsteroids();
+                //Function call for updating asteroids
+                UpdateAsteroids();
 
-            //Function call for updating the shot
-            UpdateShots();
+                //Function call for updating the shot
+                UpdateShots();
 
-            //Function call when everything is dead
-            AllDead();
+                //Function call when everything is dead
+                AllDead();
+            }
 
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
         }
@@ -631,12 +659,12 @@ namespace Arcadia.Gamestates.Asteroids
                 }
 
                 //collision
-                if (a.Alive && CheckShipCollision(a))
+                if (a.Alive && CheckShipCollision(a) && ship.Alive)
                 {
                     a.Kill();
                     destroyed.Add(a);
+                    ship.Kill();
                     lives--;
-                    Initialize();
                     if (lives < 1)
                         gameOver = true;
                 }
@@ -744,6 +772,17 @@ namespace Arcadia.Gamestates.Asteroids
                     ship.Scale,
                     SpriteEffects.None,
                     1.0f);
+            }
+            //deploying the ship
+            else if (!ship.Alive && !gameOver)
+            {
+                string msg = "PRESS <ENTER> TO DEPLOY YOUR SHIP";
+                Vector2 size = scoreFont.MeasureString(msg);
+
+                Vector2 position3 = new Vector2((ScreenManager.Game.GraphicsDevice.Viewport.Width / 2) - (size.X / 2),
+                    ScreenManager.Game.GraphicsDevice.Viewport.Height / 2 + (size.Y * 2));
+
+                spriteBatch.DrawString(scoreFont, msg, position3, Color.White);
             }
 
             //for displaying the shots in screen
